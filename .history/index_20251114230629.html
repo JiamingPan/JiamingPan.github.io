@@ -101,11 +101,13 @@
 							<section>
 								<h3>Determining the Hubble Constant with Galaxy–GW Cross-Correlations</h3>
 								<p>
-								I developed a tomographic cross-correlation pipeline that uses galaxy survey and 
-								gravitational- ave events to constrain the Hubble constant without relying on host-galaxy 
+								I developed a tomographic cross-correlation pipeline that uses galaxy surveys and 
+								gravitational-wave events to constrain the Hubble constant without relying on host-galaxy 
 								identification. I performed Fisher forecasts, quantified how the uncertainty scales with 
-								the number of events and their localization errors.
+								the number of events and their localization, and built a modeling framework for dark-siren 
+								cosmology in future surveys such as DESI, Rubin, and LIGO–Virgo–KAGRA.
 								</p>
+
 								<p>
 								<strong>J. PAN</strong>, D. Huterer, C. Avestruz, D. H. T. Cheung, E. Trott, N. Dalal et al., 
 								Determining the Hubble Constant through Cross-Correlation of Galaxies and Gravitational Waves (2025),
@@ -152,7 +154,7 @@
 								<section>
 									<h3>Solar System Objects</h3>
 				
-								<p>  I've worked with Prof. David Gerdes and Dr. Ed Lin in the study of Jupiter Trojans. We found Trojans' colors become less red with fainter
+								<p>  I've wroked with Prof. David Gerdes and Dr. Ed Lin in the study of Jupiter Trojans. We found Trojans' colors become less red with fainter
 									absolute magnitudes in the Dark Energy Survey data, further supporting the color-size correlation. </p>
 								<span class="image main"><img src="images/Trojans_colors.jpg" alt="" /></span> 
 								 <strong>J. PAN</strong>, H. W. Lin, D. W. Gerdes, K. J. Napier, J. Wang, T. M. C. Abbott et al., Photometric Properties of Jupiter Trojans
@@ -161,48 +163,31 @@
 							</article>
 
 						<!-- Contact -->
-<!-- Contact -->
-<article id="contact">
-	<h2 class="major">Contact</h2>
-
-	<p>
-		The best way to reach me is by email:
-		<br />
-		<strong><a href="mailto:jiamingp@umich.edu">jiamingp@umich.edu</a></strong>
-	</p>
-
-	<p>
-		You can also find my work and profiles here:
-	</p>
-
-	<ul>
-		<li>
-			<a href="https://inspirehep.net/authors/2605724?ui-citation-summary=true" target="_blank" rel="noopener noreferrer">
-				InspireHEP profile
-			</a>
-		</li>
-		<li>
-			<!-- TODO: replace href with your actual Google Scholar URL -->
-			<a href="#" target="_blank" rel="noopener noreferrer">
-				Google Scholar
-			</a>
-		</li>
-		<li>
-			<a href="https://github.com/jiamingpan" target="_blank" rel="noopener noreferrer">
-				GitHub
-			</a>
-		</li>
-		<li>
-			<a href="https://www.linkedin.com/in/jiaming-pan-99b179162" target="_blank" rel="noopener noreferrer">
-				LinkedIn
-			</a>
-		</li>
-	</ul>
-
-	<p>
-		If you'd like to get in touch, feel free to email me anytime.
-	</p>
-</article>
+							<article id="contact">
+								<h2 class="major">Contact</h2>
+								<!-- Action updated to point to a PHP script -->
+								<form method="post" action="sendEmail.php">
+									<div class="fields">
+										<div class="field half">
+											<label for="name">Name</label>
+											<input type="text" name="name" id="name" required />
+										</div>
+										<div class="field half">
+											<label for="email">Email</label>
+											<input type="email" name="email" id="email" required />
+										</div>
+										<div class="field">
+											<label for="message">Message</label>
+											<textarea name="message" id="message" rows="4" required></textarea>
+										</div>
+									</div>
+									<ul class="actions">
+										<li><input type="submit" value="Send Message" class="primary" /></li>
+										<li><input type="reset" value="Reset" /></li>
+									</ul>
+								</form>
+								<!-- Your existing social links here -->
+							</article>
 						
 
 						<!-- Elements -->

@@ -161,48 +161,31 @@
 							</article>
 
 						<!-- Contact -->
-<!-- Contact -->
-<article id="contact">
-	<h2 class="major">Contact</h2>
-
-	<p>
-		The best way to reach me is by email:
-		<br />
-		<strong><a href="mailto:jiamingp@umich.edu">jiamingp@umich.edu</a></strong>
-	</p>
-
-	<p>
-		You can also find my work and profiles here:
-	</p>
-
-	<ul>
-		<li>
-			<a href="https://inspirehep.net/authors/2605724?ui-citation-summary=true" target="_blank" rel="noopener noreferrer">
-				InspireHEP profile
-			</a>
-		</li>
-		<li>
-			<!-- TODO: replace href with your actual Google Scholar URL -->
-			<a href="#" target="_blank" rel="noopener noreferrer">
-				Google Scholar
-			</a>
-		</li>
-		<li>
-			<a href="https://github.com/jiamingpan" target="_blank" rel="noopener noreferrer">
-				GitHub
-			</a>
-		</li>
-		<li>
-			<a href="https://www.linkedin.com/in/jiaming-pan-99b179162" target="_blank" rel="noopener noreferrer">
-				LinkedIn
-			</a>
-		</li>
-	</ul>
-
-	<p>
-		If you'd like to get in touch, feel free to email me anytime.
-	</p>
-</article>
+							<article id="contact">
+								<h2 class="major">Contact</h2>
+								<!-- Action updated to point to a PHP script -->
+								<form method="post" action="sendEmail.php">
+									<div class="fields">
+										<div class="field half">
+											<label for="name">Name</label>
+											<input type="text" name="name" id="name" required />
+										</div>
+										<div class="field half">
+											<label for="email">Email</label>
+											<input type="email" name="email" id="email" required />
+										</div>
+										<div class="field">
+											<label for="message">Message</label>
+											<textarea name="message" id="message" rows="4" required></textarea>
+										</div>
+									</div>
+									<ul class="actions">
+										<li><input type="submit" value="Send Message" class="primary" /></li>
+										<li><input type="reset" value="Reset" /></li>
+									</ul>
+								</form>
+								<!-- Your existing social links here -->
+							</article>
 						
 
 						<!-- Elements -->
