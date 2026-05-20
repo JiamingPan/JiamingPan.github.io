@@ -1,297 +1,459 @@
-<!DOCTYPE HTML>
-<!--
-	Dimension by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
-<html>
-	<head>
-		<title>Jiaming Pan</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="assets/css/main.css" />
-		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-	</head>
-	<body class="is-preload">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Jiaming Pan</title>
+	<meta name="description" content="Jiaming Pan — Physics PhD candidate at the University of Michigan working on machine learning, statistical inference, optimization, and large-scale data analysis." />
+	<meta name="author" content="Jiaming Pan" />
+	<meta property="og:title" content="Jiaming Pan" />
+	<meta property="og:description" content="Physics PhD candidate working on machine learning, statistical inference, and large-scale data analysis." />
+	<meta property="og:type" content="website" />
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+	<style>
+		:root {
+			--bg: #fcfcfc;
+			--text: #16181d;
+			--muted: #5f6672;
+			--faint: #9aa1ac;
+			--border: #e7e7ea;
+			--accent: #2557d6;
+			--nav-bg: rgba(252, 252, 252, 0.82);
+			--maxw: 680px;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--bg: #0e1014;
+				--text: #e6e8ec;
+				--muted: #9aa1ac;
+				--faint: #6b7280;
+				--border: #262a33;
+				--accent: #7aa2f7;
+				--nav-bg: rgba(14, 16, 20, 0.82);
+			}
+		}
+		* { box-sizing: border-box; margin: 0; padding: 0; }
+		html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+		body {
+			font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+			background: var(--bg);
+			color: var(--text);
+			line-height: 1.65;
+			font-size: 16px;
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
+		}
+		a { color: var(--accent); text-decoration: none; }
+		a:hover { text-decoration: underline; }
 
-		<!-- Wrapper -->
-			<div id="wrapper">
+		/* Navigation */
+		.nav {
+			position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+			background: var(--nav-bg);
+			backdrop-filter: saturate(180%) blur(12px);
+			-webkit-backdrop-filter: saturate(180%) blur(12px);
+			border-bottom: 1px solid var(--border);
+		}
+		.nav-inner {
+			max-width: var(--maxw); margin: 0 auto;
+			padding: 14px 24px;
+			display: flex; align-items: center; justify-content: space-between;
+		}
+		.nav-name { font-weight: 600; font-size: 15px; color: var(--text); }
+		.nav-name:hover { text-decoration: none; }
+		.nav-links { display: flex; gap: 22px; }
+		.nav-links a {
+			color: var(--muted); font-size: 14px; font-weight: 500;
+			transition: color 0.15s ease;
+		}
+		.nav-links a:hover, .nav-links a.active { color: var(--accent); text-decoration: none; }
+		@media (max-width: 560px) {
+			.nav-name { display: none; }
+			.nav-inner { justify-content: center; padding: 12px 16px; }
+			.nav-links { gap: 16px; }
+			.nav-links a { font-size: 13px; }
+		}
 
-				<!-- Header -->
-					<header id="header">
-						<div class="logo">
-							<img src="images/105fef.jpg" alt="Jiaming Pan" />
-						</div>
-						<div class="content">
-							<div class="inner">
-								<h1>Jiaming Pan</h1>
-								<p>
-									Physics PhD Student · University of Michigan<br />
-									Cosmology &amp; Machine Learning
-								</p>
-							</div>
-						</div>
-						<nav>
-							<ul>
-								<li><a href="#about">About</a></li>
-								<li><a href="#skills">Skills</a></li>
-								<li><a href="#projects">Projects</a></li>
-								<li><a href="#research">Research</a></li>
-								<li><a href="#contact">Contact</a></li>
-							</ul>
-						</nav>
-					</header>
+		/* Layout */
+		main { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+		.hero { padding: 132px 0 52px; }
+		.hero h1 {
+			font-size: 42px; font-weight: 700; letter-spacing: -0.025em;
+			line-height: 1.1;
+		}
+		.hero .role { margin-top: 14px; font-size: 17px; font-weight: 500; }
+		.hero .tagline { margin-top: 4px; font-size: 16px; color: var(--muted); }
 
-				<!-- Main -->
-					<div id="main">
+		.section { padding: 46px 0; border-top: 1px solid var(--border); }
+		.section > h2 {
+			font-size: 12.5px; font-weight: 600; text-transform: uppercase;
+			letter-spacing: 0.09em; color: var(--accent); margin-bottom: 22px;
+		}
+		.section p { margin-bottom: 14px; }
+		.section p:last-child { margin-bottom: 0; }
 
-						<!-- About -->
-							<article id="about">
-								<h2 class="major">About Me</h2>
-								<span class="image main"><img src="images/physics-logo.png" alt="" /></span>
-								<p>
-									I'm a PhD candidate in the
-									<a href="https://lsa.umich.edu/physics">Physics Department</a> at the
-									<a href="https://umich.edu/">University of Michigan</a>, working in theoretical
-									cosmology under Prof. Dragan Huterer and Prof. Camille Avestruz. My research
-									focuses on dark energy, modified gravity, and large-scale structure, combining
-									statistical methods and observational data to test extensions of standard cosmology.
-								</p>
-								<p>
-									Alongside my PhD work, I am also deeply interested in machine learning, optimization, and efficient AI systems. I have worked on related problems in LLM quantization and numerical optimization, including collaboration with <a href="https://www.polylabs.ai" target="_blank" rel="noopener noreferrer">PolyLabs Inc.</a> on solver design and model efficiency. I am especially drawn to problems where mathematical structure leads to practical algorithmic and systems improvements.
-								</p>
-								<ul class="actions">
-									<li><a href="#research" class="button primary">Research</a></li>
-									<li><a href="#projects" class="button">Projects</a></li>
-								</ul>
-							</article>
+		/* Social icons */
+		.socials { display: flex; gap: 12px; margin-top: 26px; }
+		.socials a {
+			display: inline-flex; align-items: center; justify-content: center;
+			width: 40px; height: 40px;
+			border: 1px solid var(--border); border-radius: 10px;
+			color: var(--muted);
+			transition: color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+		}
+		.socials a:hover {
+			color: var(--accent); border-color: var(--accent);
+			text-decoration: none; transform: translateY(-2px);
+		}
+		.socials svg { width: 18px; height: 18px; }
 
-						<!-- Skills -->
-							<article id="skills">
-								<h2 class="major">Skills</h2>
+		/* Skills */
+		.skill-group { margin-bottom: 16px; }
+		.skill-group:last-child { margin-bottom: 0; }
+		.skill-group h3 { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+		.skill-group p { font-size: 15px; color: var(--muted); margin-bottom: 0; }
 
-								<h3>Programming</h3>
-								<p>Python &nbsp;·&nbsp; C/C++ &nbsp;·&nbsp; SQL &nbsp;·&nbsp; Bash &nbsp;·&nbsp; Fortran &nbsp;·&nbsp; CUDA (via PyTorch)</p>
+		/* Items (projects / research / education) */
+		.item { margin-bottom: 30px; }
+		.item:last-child { margin-bottom: 0; }
+		.item-head {
+			display: flex; justify-content: space-between; align-items: baseline;
+			gap: 14px; flex-wrap: wrap;
+		}
+		.item h3 { font-size: 17px; font-weight: 600; }
+		.item .date { font-size: 13px; color: var(--faint); white-space: nowrap; }
+		.item .sub { font-size: 14px; color: var(--muted); margin-top: 2px; }
+		.item .desc { font-size: 15px; margin-top: 8px; }
+		.item .stack { font-size: 13px; color: var(--muted); margin-top: 8px; }
+		.item .stack b { color: var(--text); font-weight: 600; }
+		.item .repo {
+			display: inline-flex; align-items: center; gap: 6px;
+			font-size: 13px; font-weight: 500; margin-top: 10px;
+		}
+		.item .repo svg { width: 14px; height: 14px; }
 
-								<h3>ML &amp; Data</h3>
-								<p>PyTorch &nbsp;·&nbsp; PyTorch Geometric &nbsp;·&nbsp; scikit-learn &nbsp;·&nbsp; NumPy &nbsp;·&nbsp; SciPy &nbsp;·&nbsp; pandas &nbsp;·&nbsp; Matplotlib</p>
+		.lead { font-size: 15px; color: var(--muted); margin-bottom: 22px !important; }
+		.stats {
+			font-size: 14px; font-weight: 500;
+			padding: 10px 0; margin-bottom: 22px;
+			border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+		}
+		.pub {
+			font-size: 13px; color: var(--muted);
+			margin-top: 8px; line-height: 1.6;
+		}
+		.pub strong { color: var(--text); font-weight: 600; }
+		.pub + .pub { margin-top: 6px; }
 
-								<h3>Methods</h3>
-								<p>
-									Machine learning &nbsp;·&nbsp; Graph neural networks (GNN) &nbsp;·&nbsp;
-									Statistical modeling &nbsp;·&nbsp; Numerical optimization &nbsp;·&nbsp;
-									Bayesian inference &nbsp;·&nbsp; MCMC &nbsp;·&nbsp;
-									Uncertainty quantification &nbsp;·&nbsp; Hypothesis testing &nbsp;·&nbsp;
-									Experiment design
-								</p>
+		.edu-awards { font-size: 13px; color: var(--faint); margin-top: 3px; }
 
-								<h3>Systems &amp; Infrastructure</h3>
-								<p>Linux &nbsp;·&nbsp; Git &nbsp;·&nbsp; Slurm &nbsp;·&nbsp; HPC &nbsp;·&nbsp; Parallel computing &nbsp;·&nbsp; GPU workflows (CUDA / Apple MPS)</p>
+		.contact-email {
+			display: inline-block; font-size: 19px; font-weight: 600;
+			margin-bottom: 4px;
+		}
 
-								<h3>Communication</h3>
-								<p>
-									Delivered technical talks in 1,000+ member international collaborations.
-									Designed and taught a university-level summer course translating complex quantitative
-									concepts for non-specialist audiences.
-								</p>
-							</article>
+		footer {
+			max-width: var(--maxw); margin: 0 auto;
+			padding: 30px 24px 52px;
+			border-top: 1px solid var(--border);
+			font-size: 13px; color: var(--faint);
+		}
+	</style>
+</head>
+<body>
 
-						<!-- Projects -->
-							<article id="projects">
-								<h2 class="major">Projects</h2>
+	<nav class="nav">
+		<div class="nav-inner">
+			<a href="#top" class="nav-name">Jiaming Pan</a>
+			<div class="nav-links">
+				<a href="#about">About</a>
+				<a href="#skills">Skills</a>
+				<a href="#projects">Projects</a>
+				<a href="#research">Research</a>
+				<a href="#contact">Contact</a>
+			</div>
+		</div>
+	</nav>
 
-								<section>
-									<h3>LLM Quantization &amp; Optimization Solver</h3>
-									<p><em>PolyLabs Inc. &nbsp;·&nbsp; Mar 2026 – Present</em></p>
-									<p>
-										Built evaluation pipelines for LLM compression and developed batched PyTorch
-										solvers for binary least-squares problems — including both exact (sphere decoding)
-										and heuristic (ICM) methods. Ran systematic experiments across N = 1K to 1M
-										instances on CPU, CUDA, and Apple MPS, analyzing convergence, stability, and
-										quality–runtime tradeoffs. Found that restart budget dominates over sweep count
-										for harder matrices, enabling more efficient parallelism. Results contributed
-										to a <strong>14× speedup</strong> over the baseline in their production pipeline.
-									</p>
-									<p><strong>Stack:</strong> Python · PyTorch · CUDA · Apple MPS · NumPy</p>
-								</section>
+	<main id="top">
 
-								<hr />
+		<!-- Hero -->
+		<header class="hero">
+			<h1>Jiaming Pan</h1>
+			<p class="role">Physics PhD Candidate · University of Michigan</p>
+			<p class="tagline">Machine learning, statistical inference, and large-scale data analysis.</p>
+			<div class="socials">
+				<a href="mailto:jiamingp@umich.edu" aria-label="Email">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2.5"/><path d="m2.5 7 9.5 6 9.5-6"/></svg>
+				</a>
+				<a href="https://github.com/jiamingpan" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+					<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58 0-.29-.01-1.04-.02-2.05-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.09 1.84 1.24 1.84 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.34-5.47-5.95 0-1.31.47-2.39 1.24-3.23-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.25 2.88.12 3.18.77.84 1.23 1.92 1.23 3.23 0 4.62-2.81 5.64-5.49 5.94.43.37.81 1.1.81 2.22 0 1.6-.01 2.89-.01 3.29 0 .32.22.7.83.58A12.01 12.01 0 0 0 24 12.5C24 5.87 18.63.5 12 .5z"/></svg>
+				</a>
+				<a href="https://www.linkedin.com/in/jiaming-pan-99b179162" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+					<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.07 2.07 0 1 1 0-4.14 2.07 2.07 0 0 1 0 4.14zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
+				</a>
+				<a href="https://scholar.google.com" target="_blank" rel="noopener noreferrer" aria-label="Google Scholar">
+					<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 24a7 7 0 1 1 0-14 7 7 0 0 1 0 14zm0-24L0 9.5l4.84 3.77A7.97 7.97 0 0 1 12 9a7.97 7.97 0 0 1 7.16 4.27L24 9.5 12 0z"/></svg>
+				</a>
+			</div>
+		</header>
 
-								<section>
-									<h3>Graph Neural Networks for 3D Simulation Data</h3>
-									<p>
-										Built PyTorch Geometric pipelines for graph-based learning on 3D simulation
-										data, including full data preprocessing, model training, and evaluation under
-										noise and distribution shift. Implemented and compared GAT, GCN, and GIN
-										architectures, evaluating predictive performance and robustness across
-										different graph representations and perturbation settings.
-									</p>
-									<p><strong>Stack:</strong> Python · PyTorch · PyTorch Geometric</p>
-								</section>
+		<!-- About -->
+		<section class="section" id="about">
+			<h2>About</h2>
+			<p>
+				I'm a Physics PhD candidate at the University of Michigan, graduating in 2027.
+				My doctoral work is in theoretical and observational cosmology — testing dark
+				energy and modified gravity with large galaxy surveys — and has centered on
+				statistical inference, Bayesian methods, and large-scale data analysis on noisy,
+				high-dimensional datasets.
+			</p>
+			<p>
+				Alongside my PhD, I work on machine learning and quantitative modeling — most
+				recently on LLM compression and optimization. I'm drawn to problems where
+				mathematical structure translates into practical algorithmic and systems gains.
+			</p>
+			<p>
+				I'm currently looking for full-time roles in machine learning, AI research, and
+				quantitative modeling.
+			</p>
+		</section>
 
-								<hr />
+		<!-- Skills -->
+		<section class="section" id="skills">
+			<h2>Skills</h2>
+			<div class="skill-group">
+				<h3>Programming</h3>
+				<p>Python · SQL · C/C++ · Fortran · Bash</p>
+			</div>
+			<div class="skill-group">
+				<h3>ML &amp; Data</h3>
+				<p>PyTorch · PyTorch Geometric · JAX · scikit-learn · NumPy · SciPy · pandas · Matplotlib</p>
+			</div>
+			<div class="skill-group">
+				<h3>Methods</h3>
+				<p>Statistical modeling · Bayesian inference · MCMC · numerical optimization · model evaluation · supervised &amp; unsupervised learning · uncertainty quantification · robustness analysis</p>
+			</div>
+			<div class="skill-group">
+				<h3>Systems</h3>
+				<p>LLM quantization &amp; compression · HPC · Slurm · Linux · Git · GPU workflows</p>
+			</div>
+			<div class="skill-group">
+				<h3>Collaboration</h3>
+				<p>Technical communication within a 900+ member international research collaboration; designed and taught a university-level summer course.</p>
+			</div>
+		</section>
 
-								<section>
-									<h3>Bayesian Inference &amp; Forecasting Pipeline</h3>
-									<p>
-										Built scalable Python pipelines for large-scale data processing, Bayesian
-										inference, and high-dimensional statistical modeling on observational datasets
-										in an HPC environment. Designed and executed end-to-end analysis workflows for
-										weak-signal detection in noisy data, including baseline comparison, robustness
-										checks, ablation-style validation, and systematic bias quantification. Also
-										developed a tomographic cross-correlation forecasting pipeline — quantifying
-										performance sensitivity to event count, distance error, and localization
-										accuracy in a high-dimensional inference setting.
-									</p>
-									<p><strong>Stack:</strong> Python · NumPy · SciPy · Slurm · HPC</p>
-								</section>
+		<!-- Projects -->
+		<section class="section" id="projects">
+			<h2>Projects</h2>
 
-							</article>
-
-						<!-- Research -->
-							<article id="research">
-								<h2 class="major">Academic Research</h2>
-								<p>
-									My academic work is in theoretical and observational cosmology, with a focus on
-									dark energy, modified gravity, and large-scale structure. I am a member of the
-									<a href="https://www.desi.lbl.gov/" target="_blank" rel="noopener noreferrer">DESI collaboration</a>.
-									Full publication list:
-									<a href="https://inspirehep.net/authors/2605724?ui-citation-summary=true" target="_blank" rel="noopener noreferrer">InspireHEP</a>
-									&nbsp;·&nbsp;
-									<a href="https://scholar.google.com" target="_blank" rel="noopener noreferrer">Google Scholar</a>.
-									<br /><strong>5,000+ citations &nbsp;·&nbsp; h-index 16 &nbsp;·&nbsp; 21 papers (18 published)</strong>
-								</p>
-
-								<hr />
-
-								<section>
-									<h3>Modified Gravity Constraints with DESI</h3>
-									<p>
-										Derived constraints on Horndeski and non-minimally coupled gravity models using
-										DESI DR2 and Y1 data. Helped build and run the EFT of Dark Energy analysis
-										pipeline, explored scale dependence in full-shape clustering, and contributed
-										to cosmological parameter estimation.
-									</p>
-									<span class="image main"><img src="images/eft.jpg" alt="Modified gravity constraints" /></span>
-									<p>
-										<strong>J. Pan</strong> and G. Ye, Non-minimally Coupled Gravity Constraints from DESI DR2 Data (2025),
-										<a href="https://arxiv.org/abs/2503.19898" target="_blank" rel="noopener noreferrer">arXiv:2503.19898</a>.<br />
-										M. Ishak, <strong>Pan, J.</strong>*, R. Calderon et al., Modified gravity constraints from full shape modeling of clustering measurements from DESI 2024,
-										<em>J. Cosmology Astropart. Phys.</em> 09 (2025) 053,
-										<a href="https://arxiv.org/abs/2411.12026" target="_blank" rel="noopener noreferrer">arXiv:2411.12026</a>.
-									</p>
-								</section>
-
-								<hr />
-
-								<section>
-									<h3>Hubble Constant from Galaxy–GW Cross-Correlations</h3>
-									<p>
-										Developed a tomographic cross-correlation pipeline using galaxy surveys and
-										gravitational-wave events to constrain H₀ without host-galaxy identification.
-										Performed Fisher forecasts and quantified uncertainty scaling with event count
-										and localization errors.
-									</p>
-									<span class="image main"><img src="images/gw_H0.png" alt="Hubble constant GW" /></span>
-									<p>
-										<strong>J. Pan</strong>, D. Huterer, C. Avestruz et al., Determining the Hubble Constant through Cross-Correlation of Galaxies and Gravitational Waves (2025),
-										<a href="https://arxiv.org/abs/2510.19931" target="_blank" rel="noopener noreferrer">arXiv:2510.19931</a>, under revision in <em>Phys. Rev. D</em>.
-									</p>
-								</section>
-
-								<hr />
-
-								<section>
-									<h3>Initial Conditions for Horndeski Gravity</h3>
-									<p>
-										Derived consistent adiabatic initial conditions for Horndeski gravity within
-										the EFT framework and implemented them in cosmological Boltzmann codes,
-										resolving long-standing inconsistencies in early-time evolution.
-									</p>
-									<p>
-										<strong>J. Pan</strong>, M.-X. Lin, G. Ye, M. Raveri and A. Silvestri,
-										Consistent Initial Conditions for Early Modified Gravity in Effective Field Theory,
-										<em>Phys. Rev. D</em> 112 (2025) 083551,
-										<a href="https://arxiv.org/abs/2506.17411" target="_blank" rel="noopener noreferrer">arXiv:2506.17411</a>.
-									</p>
-								</section>
-
-								<hr />
-
-								<section>
-									<h3>BAO Analysis in Modified-Gravity Models</h3>
-									<p>
-										Studied the robustness of the standard BAO analysis in Horndeski models,
-										finding negligible bias in BAO compression when applied to modified-gravity data.
-									</p>
-									<span class="image main"><img src="images/Fig4_contours.jpg" alt="BAO contours" /></span>
-									<p>
-										<strong>J. Pan</strong>, D. Huterer, F. Andrade-Oliveira and C. Avestruz,
-										Compressed baryon acoustic oscillation analysis is robust to modified-gravity models,
-										<a href="https://iopscience.iop.org/article/10.1088/1475-7516/2024/06/051" target="_blank" rel="noopener noreferrer"><em>J. Cosmology Astropart. Phys.</em> (2024) 051</a>
-										<a href="https://arxiv.org/abs/2312.05177" target="_blank" rel="noopener noreferrer">[2312.05177]</a>.
-									</p>
-								</section>
-
-							</article>
-
-						<!-- Contact -->
-							<article id="contact">
-								<h2 class="major">Contact</h2>
-								<p>
-									I'm actively looking for industry opportunities in ML engineering, AI research,
-									and quantitative modeling. Feel free to reach out — the best way is email.
-								</p>
-								<p>
-									<strong><a href="mailto:jiamingp@umich.edu">jiamingp@umich.edu</a></strong>
-									&nbsp;·&nbsp;
-									+1-732-763-3679
-								</p>
-
-								<ul class="icons">
-									<li>
-										<a href="https://github.com/jiamingpan" class="icon brands fa-github" target="_blank" rel="noopener noreferrer">
-											<span class="label">GitHub</span>
-										</a>
-									</li>
-									<li>
-										<a href="https://www.linkedin.com/in/jiaming-pan-99b179162" class="icon brands fa-linkedin" target="_blank" rel="noopener noreferrer">
-											<span class="label">LinkedIn</span>
-										</a>
-									</li>
-								</ul>
-
-								<ul>
-									<li>
-										<a href="https://github.com/jiamingpan" target="_blank" rel="noopener noreferrer">GitHub</a>
-									</li>
-									<li>
-										<a href="https://www.linkedin.com/in/jiaming-pan-99b179162" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-									</li>
-									<li>
-										<a href="https://inspirehep.net/authors/2605724?ui-citation-summary=true" target="_blank" rel="noopener noreferrer">InspireHEP</a>
-									</li>
-									</ul>
-							</article>
-
-					</div>
-
-				<!-- Footer -->
-					<footer id="footer">
-						<p class="copyright">&copy; Jiaming Pan. Design: <a href="https://html5up.net">HTML5 UP</a>.</p>
-					</footer>
-
+			<div class="item">
+				<div class="item-head">
+					<h3>LLM Compression &amp; Optimization</h3>
+					<span class="date">May 2026 – Present</span>
+				</div>
+				<p class="sub">Machine Learning Research Intern · Escha Labs</p>
+				<p class="desc">
+					Built an entropy-modeling pipeline for quantized Qwen3-8B weights, showing that a
+					simple Laplace model matches empirical weight-code distributions to roughly
+					2.05–2.15 bits per symbol. Designed and benchmarked batched solvers for binary
+					least-squares weight reconstruction — exact search, iterative local search, and
+					GPU candidate search — across accuracy and runtime regimes. Solver diagnostics and
+					method selection contributed to a downstream reconstruction pipeline reaching a
+					14× speedup over the prior baseline. Also proposed a unified sensitivity framework
+					to distinguish load-bearing "super weights" from removable outlier weights.
+				</p>
+				<p class="stack"><b>Stack:</b> Python · PyTorch · CUDA · NumPy</p>
 			</div>
 
-		<!-- BG -->
-			<div id="bg"></div>
+			<div class="item">
+				<div class="item-head">
+					<h3>Diffusion Models for Scientific Simulation Data</h3>
+				</div>
+				<p class="desc">
+					Built a physics-aware evaluation and reproducibility framework for diffusion
+					models on CAMELS 128³ cosmological simulation fields. Developed the data
+					pipeline converting raw 3D fields into trainable 2D slices, ran controlled
+					ablations (normalization, augmentation, noise schedules, EMA), and built
+					diagnostics — power-spectrum ratios, one-point statistics, nearest-neighbor
+					memorization tests, and PCA feature-space comparisons — to catch memorization,
+					sample-quality failures, and unstable training. Base diffusion training builds
+					on the open-source cosmo_diffusion package.
+				</p>
+				<p class="stack"><b>Stack:</b> Python · PyTorch · NumPy · Jupyter</p>
+				<a class="repo" href="https://github.com/JiamingPan/diffusion-models-simulation-data" target="_blank" rel="noopener noreferrer">
+					<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58 0-.29-.01-1.04-.02-2.05-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.09 1.84 1.24 1.84 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.34-5.47-5.95 0-1.31.47-2.39 1.24-3.23-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.25 2.88.12 3.18.77.84 1.23 1.92 1.23 3.23 0 4.62-2.81 5.64-5.49 5.94.43.37.81 1.1.81 2.22 0 1.6-.01 2.89-.01 3.29 0 .32.22.7.83.58A12.01 12.01 0 0 0 24 12.5C24 5.87 18.63.5 12 .5z"/></svg>
+					View on GitHub
+				</a>
+			</div>
 
-		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/browser.min.js"></script>
-			<script src="assets/js/breakpoints.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
+			<div class="item">
+				<div class="item-head">
+					<h3>Large-Scale Bayesian Inference Pipeline</h3>
+				</div>
+				<p class="desc">
+					Engineered scalable Python and JAX pipelines for the Dark Energy Spectroscopic
+					Instrument (DESI), extracting weak statistical signals from tens of millions of
+					noisy observations. Automated high-performance computing workflows for large-scale
+					MCMC inference — batch execution, convergence diagnostics, result aggregation, and
+					reproducible model comparison — and designed statistical validation workflows using
+					sensitivity analysis, bias diagnostics, and stress tests to surface fragile
+					modeling assumptions.
+				</p>
+				<p class="stack"><b>Stack:</b> Python · JAX · NumPy · SciPy · Slurm · HPC</p>
+			</div>
+		</section>
 
-	</body>
+		<!-- Research -->
+		<section class="section" id="research">
+			<h2>Research</h2>
+			<p class="lead">
+				My doctoral research is in theoretical and observational cosmology — dark energy,
+				modified gravity, and large-scale structure — as a member of the
+				<a href="https://www.desi.lbl.gov/" target="_blank" rel="noopener noreferrer">DESI collaboration</a>.
+			</p>
+			<p class="stats">
+				21 papers · 5,000+ citations · h-index 16 &nbsp;—&nbsp;
+				<a href="https://scholar.google.com" target="_blank" rel="noopener noreferrer">Google Scholar</a> ·
+				<a href="https://inspirehep.net/authors/2605724?ui-citation-summary=true" target="_blank" rel="noopener noreferrer">InspireHEP</a>
+			</p>
+
+			<div class="item">
+				<h3>Modified Gravity Constraints with DESI</h3>
+				<p class="desc">
+					Constraints on Horndeski and non-minimally coupled gravity from DESI DR2 and Y1
+					data, including work on the EFT of Dark Energy analysis pipeline, scale dependence
+					in full-shape clustering, and cosmological parameter estimation.
+				</p>
+				<p class="pub">
+					<strong>J. Pan</strong> and G. Ye, <em>Non-minimally Coupled Gravity Constraints from DESI DR2 Data</em> (2025),
+					<a href="https://arxiv.org/abs/2503.19898" target="_blank" rel="noopener noreferrer">arXiv:2503.19898</a>.
+				</p>
+				<p class="pub">
+					M. Ishak, <strong>J. Pan</strong>, R. Calderon et al., <em>Modified gravity constraints from full-shape modeling of clustering measurements from DESI 2024</em>,
+					J. Cosmology Astropart. Phys. 09 (2025) 053,
+					<a href="https://arxiv.org/abs/2411.12026" target="_blank" rel="noopener noreferrer">arXiv:2411.12026</a>.
+				</p>
+			</div>
+
+			<div class="item">
+				<h3>Hubble Constant from Galaxy–GW Cross-Correlations</h3>
+				<p class="desc">
+					A tomographic cross-correlation pipeline using galaxy surveys and gravitational-wave
+					events to constrain H₀ without host-galaxy identification, with Fisher forecasts
+					quantifying how uncertainty scales with event count and localization accuracy.
+				</p>
+				<p class="pub">
+					<strong>J. Pan</strong>, D. Huterer, C. Avestruz et al., <em>Determining the Hubble Constant through Cross-Correlation of Galaxies and Gravitational Waves</em> (2025),
+					<a href="https://arxiv.org/abs/2510.19931" target="_blank" rel="noopener noreferrer">arXiv:2510.19931</a> (under revision, Phys. Rev. D).
+				</p>
+			</div>
+
+			<div class="item">
+				<h3>Consistent Initial Conditions for Early Modified Gravity</h3>
+				<p class="desc">
+					Derived consistent adiabatic initial conditions for Horndeski gravity within the
+					EFT framework and implemented them in cosmological Boltzmann codes, resolving
+					long-standing inconsistencies in early-time evolution.
+				</p>
+				<p class="pub">
+					<strong>J. Pan</strong>, M.-X. Lin, G. Ye, M. Raveri and A. Silvestri, <em>Consistent Initial Conditions for Early Modified Gravity in Effective Field Theory</em>,
+					Phys. Rev. D 112 (2025) 083551,
+					<a href="https://arxiv.org/abs/2506.17411" target="_blank" rel="noopener noreferrer">arXiv:2506.17411</a>.
+				</p>
+			</div>
+
+			<div class="item">
+				<h3>Robustness of BAO Analysis in Modified Gravity</h3>
+				<p class="desc">
+					Showed that the standard baryon acoustic oscillation analysis remains robust in
+					Horndeski models, with negligible bias in BAO compression when applied to
+					modified-gravity data.
+				</p>
+				<p class="pub">
+					<strong>J. Pan</strong>, D. Huterer, F. Andrade-Oliveira and C. Avestruz, <em>Compressed baryon acoustic oscillation analysis is robust to modified-gravity models</em>,
+					J. Cosmology Astropart. Phys. (2024) 051,
+					<a href="https://arxiv.org/abs/2312.05177" target="_blank" rel="noopener noreferrer">arXiv:2312.05177</a>.
+				</p>
+			</div>
+		</section>
+
+		<!-- Education -->
+		<section class="section" id="education">
+			<h2>Education</h2>
+			<div class="item">
+				<div class="item-head">
+					<h3>PhD, Physics</h3>
+					<span class="date">Expected 2027</span>
+				</div>
+				<p class="sub">University of Michigan</p>
+				<p class="edu-awards">MICDE Fellowship · Peter Franken Award · Leinweber Graduate Summer Fellowship</p>
+			</div>
+			<div class="item">
+				<div class="item-head">
+					<h3>BS, Astronomy &amp; Astrophysics and Physics</h3>
+					<span class="date">2022</span>
+				</div>
+				<p class="sub">University of Michigan · Highest Honors · Minor in Philosophy</p>
+				<p class="edu-awards">William L. Williams Thesis Award · Wirt and Mary Cornwell Prize</p>
+			</div>
+		</section>
+
+		<!-- Contact -->
+		<section class="section" id="contact">
+			<h2>Contact</h2>
+			<p>
+				I'm open to full-time opportunities in machine learning, AI research, and
+				quantitative modeling. Email is the best way to reach me.
+			</p>
+			<p>
+				<a href="mailto:jiamingp@umich.edu" class="contact-email">jiamingp@umich.edu</a>
+			</p>
+			<div class="socials">
+				<a href="https://github.com/jiamingpan" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+					<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58 0-.29-.01-1.04-.02-2.05-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.09 1.84 1.24 1.84 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.34-5.47-5.95 0-1.31.47-2.39 1.24-3.23-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.25 2.88.12 3.18.77.84 1.23 1.92 1.23 3.23 0 4.62-2.81 5.64-5.49 5.94.43.37.81 1.1.81 2.22 0 1.6-.01 2.89-.01 3.29 0 .32.22.7.83.58A12.01 12.01 0 0 0 24 12.5C24 5.87 18.63.5 12 .5z"/></svg>
+				</a>
+				<a href="https://www.linkedin.com/in/jiaming-pan-99b179162" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+					<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.07 2.07 0 1 1 0-4.14 2.07 2.07 0 0 1 0 4.14zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
+				</a>
+				<a href="https://scholar.google.com" target="_blank" rel="noopener noreferrer" aria-label="Google Scholar">
+					<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 24a7 7 0 1 1 0-14 7 7 0 0 1 0 14zm0-24L0 9.5l4.84 3.77A7.97 7.97 0 0 1 12 9a7.97 7.97 0 0 1 7.16 4.27L24 9.5 12 0z"/></svg>
+				</a>
+			</div>
+		</section>
+
+	</main>
+
+	<footer>
+		&copy; 2026 Jiaming Pan
+	</footer>
+
+	<script>
+		// Highlight the active section in the nav as the page scrolls.
+		(function () {
+			var links = Array.prototype.slice.call(document.querySelectorAll('.nav-links a'));
+			var map = {};
+			links.forEach(function (a) {
+				var id = a.getAttribute('href').slice(1);
+				var el = document.getElementById(id);
+				if (el) map[id] = a;
+			});
+			var observer = new IntersectionObserver(function (entries) {
+				entries.forEach(function (entry) {
+					if (entry.isIntersecting) {
+						links.forEach(function (a) { a.classList.remove('active'); });
+						if (map[entry.target.id]) map[entry.target.id].classList.add('active');
+					}
+				});
+			}, { rootMargin: '-45% 0px -50% 0px' });
+			Object.keys(map).forEach(function (id) {
+				observer.observe(document.getElementById(id));
+			});
+		})();
+	</script>
+
+</body>
 </html>
