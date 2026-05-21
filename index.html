@@ -7,7 +7,7 @@
 	<meta name="description" content="Jiaming Pan — Physics PhD candidate at the University of Michigan working on machine learning, statistical inference, optimization, and large-scale data analysis." />
 	<meta name="author" content="Jiaming Pan" />
 	<meta property="og:title" content="Jiaming Pan" />
-	<meta property="og:description" content="Physics PhD candidate working on machine learning, statistical inference, and large-scale data analysis." />
+	<meta property="og:description" content="Physics PhD candidate working on machine learning, statistical inference, optimization, and large-scale data analysis." />
 	<meta property="og:type" content="website" />
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -154,6 +154,20 @@
 			margin-bottom: 4px;
 		}
 
+		/* Resume button */
+		.btn {
+			display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+			height: 40px; padding: 0 18px;
+			border: 1px solid var(--border); border-radius: 10px;
+			font-size: 14px; font-weight: 600; color: var(--text);
+			transition: color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+		}
+		.btn:hover {
+			color: var(--accent); border-color: var(--accent);
+			text-decoration: none; transform: translateY(-2px);
+		}
+		.btn svg { width: 15px; height: 15px; }
+
 		footer {
 			max-width: var(--maxw); margin: 0 auto;
 			padding: 30px 24px 52px;
@@ -183,8 +197,12 @@
 		<header class="hero">
 			<h1>Jiaming Pan</h1>
 			<p class="role">Physics PhD Candidate · University of Michigan</p>
-			<p class="tagline">Machine learning, statistical inference, and large-scale data analysis.</p>
+			<p class="tagline">Machine learning, statistical inference, and optimization on large-scale, high-dimensional data.</p>
 			<div class="socials">
+				<a href="Jiaming_Pan_CV.pdf" class="btn" target="_blank" rel="noopener noreferrer">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M5 21h14"/></svg>
+					Résumé
+				</a>
 				<a href="mailto:jiamingp@umich.edu" aria-label="Email">
 					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2.5"/><path d="m2.5 7 9.5 6 9.5-6"/></svg>
 				</a>
@@ -205,19 +223,23 @@
 			<h2>About</h2>
 			<p>
 				I'm a Physics PhD candidate at the University of Michigan, graduating in 2027.
-				My doctoral work is in theoretical and observational cosmology — testing dark
-				energy and modified gravity with large galaxy surveys — and has centered on
-				statistical inference, Bayesian methods, and large-scale data analysis on noisy,
-				high-dimensional datasets.
+				My research extracts weak statistical signals from noisy, high-dimensional data —
+				measuring small cosmological effects across surveys of tens of millions of
+				galaxies — and builds the scalable inference pipelines that make those
+				measurements reproducible.
 			</p>
 			<p>
-				Alongside my PhD, I work on machine learning and quantitative modeling — most
-				recently on LLM compression and optimization. I'm drawn to problems where
-				mathematical structure translates into practical algorithmic and systems gains.
+				The work runs on Bayesian inference, uncertainty quantification, model validation,
+				and numerical optimization, executed on high-performance computing clusters. I
+				treat robustness as a first-class concern: whether a result holds up under
+				systematic error, alternative modeling assumptions, and out-of-sample data.
 			</p>
 			<p>
-				I'm currently looking for full-time roles in machine learning, AI research, and
-				quantitative modeling.
+				More recently I've worked on machine learning directly — LLM compression and
+				optimization, and diffusion models for scientific simulation data — with a focus
+				on generative modeling under limited data and validation beyond surface-level
+				sample quality. I'm looking for full-time roles in machine learning, AI research,
+				quantitative research, and quantitative modeling.
 			</p>
 		</section>
 
@@ -233,12 +255,16 @@
 				<p>PyTorch · PyTorch Geometric · JAX · scikit-learn · NumPy · SciPy · pandas · Matplotlib</p>
 			</div>
 			<div class="skill-group">
-				<h3>Methods</h3>
-				<p>Statistical modeling · Bayesian inference · MCMC · numerical optimization · model evaluation · supervised &amp; unsupervised learning · uncertainty quantification · robustness analysis</p>
+				<h3>Modeling &amp; Inference</h3>
+				<p>Predictive modeling · Bayesian inference · MCMC · supervised &amp; unsupervised learning · weak-signal extraction · numerical optimization</p>
 			</div>
 			<div class="skill-group">
-				<h3>Systems</h3>
-				<p>LLM quantization &amp; compression · HPC · Slurm · Linux · Git · GPU workflows</p>
+				<h3>Validation &amp; Robustness</h3>
+				<p>Uncertainty quantification · sensitivity analysis · out-of-sample validation · model robustness · systematic-bias testing · model comparison</p>
+			</div>
+			<div class="skill-group">
+				<h3>Systems &amp; Compute</h3>
+				<p>HPC · Slurm · GPU workflows · LLM quantization &amp; compression · Linux · Git</p>
 			</div>
 			<div class="skill-group">
 				<h3>Collaboration</h3>
@@ -257,14 +283,19 @@
 				</div>
 				<p class="sub">Machine Learning Research Intern · Escha Labs</p>
 				<p class="desc">
-					Built an entropy-modeling pipeline for quantized Qwen3-8B weights, showing that a
-					simple Laplace model matches empirical weight-code distributions to roughly
-					2.05–2.15 bits per symbol. Designed and benchmarked batched solvers for binary
-					least-squares weight reconstruction — exact search, iterative local search, and
-					GPU candidate search — across accuracy and runtime regimes. Solver diagnostics and
-					method selection contributed to a downstream reconstruction pipeline reaching a
-					14× speedup over the prior baseline. Also proposed a unified sensitivity framework
-					to distinguish load-bearing "super weights" from removable outlier weights.
+					Tackled the weight-reconstruction step of large language model compression,
+					where quantized weights must be recovered accurately without inflating
+					inference cost. Modeled the distribution of quantized weight codes and found
+					that a simple Laplace model matches the empirical histograms to roughly
+					2.05–2.15 bits per symbol, then designed and benchmarked batched solvers for
+					the underlying binary least-squares problem — exact search, iterative local
+					search, and GPU candidate search — across accuracy and runtime regimes. Tested
+					on quantized Qwen3-8B weights; solver diagnostics and method selection fed a
+					downstream reconstruction pipeline that reached a 14× speedup over the prior
+					baseline. Separately built a sensitivity framework to identify "super weights" —
+					a small set of unusually load-bearing parameters whose removal sharply degrades
+					the model — and to separate them from outlier weights that can be safely
+					removed or corrected.
 				</p>
 				<p class="stack"><b>Stack:</b> Python · PyTorch · CUDA · NumPy</p>
 			</div>
@@ -274,14 +305,18 @@
 					<h3>Diffusion Models for Scientific Simulation Data</h3>
 				</div>
 				<p class="desc">
-					Built a physics-aware evaluation and reproducibility framework for diffusion
-					models on CAMELS 128³ cosmological simulation fields. Developed the data
-					pipeline converting raw 3D fields into trainable 2D slices, ran controlled
-					ablations (normalization, augmentation, noise schedules, EMA), and built
-					diagnostics — power-spectrum ratios, one-point statistics, nearest-neighbor
-					memorization tests, and PCA feature-space comparisons — to catch memorization,
-					sample-quality failures, and unstable training. Base diffusion training builds
-					on the open-source cosmo_diffusion package.
+					Generative modeling of scientific fields is hard to evaluate: training data is
+					limited and visual sample quality is a misleading proxy for correctness. Built
+					a physics-aware evaluation and reproducibility framework for diffusion models
+					trained on CAMELS 128³ cosmological simulation fields — developing the data
+					pipeline that converts raw 3D fields into trainable 2D slices and running
+					controlled ablations on normalization, augmentation, noise schedules, and EMA.
+					The core contribution is scientific validation: radial power-spectrum ratios,
+					field one-point statistics, nearest-neighbor distance tests for memorization,
+					and PCA feature-space comparisons, used together to separate genuine
+					generalization from memorization and to flag sample-quality failures and
+					unstable training. Base diffusion training builds on the open-source
+					cosmo_diffusion package.
 				</p>
 				<p class="stack"><b>Stack:</b> Python · PyTorch · NumPy · Jupyter</p>
 				<a class="repo" href="https://github.com/JiamingPan/diffusion-models-simulation-data" target="_blank" rel="noopener noreferrer">
@@ -295,13 +330,16 @@
 					<h3>Large-Scale Bayesian Inference Pipeline</h3>
 				</div>
 				<p class="desc">
-					Engineered scalable Python and JAX pipelines for the Dark Energy Spectroscopic
-					Instrument (DESI), extracting weak statistical signals from tens of millions of
-					noisy observations. Automated high-performance computing workflows for large-scale
-					MCMC inference — batch execution, convergence diagnostics, result aggregation, and
-					reproducible model comparison — and designed statistical validation workflows using
-					sensitivity analysis, bias diagnostics, and stress tests to surface fragile
-					modeling assumptions.
+					The recurring problem in survey cosmology is also a quantitative one: extracting
+					weak statistical signals from tens of millions of noisy, high-dimensional
+					observations. Built scalable Python and JAX pipelines for the Dark Energy
+					Spectroscopic Instrument (DESI) and automated large-scale MCMC inference on
+					high-performance computing clusters — batch execution, convergence diagnostics,
+					result aggregation, and reproducible comparison across competing models.
+					Designed the validation layer around robustness: sensitivity analysis,
+					systematic-bias tests, and stress tests that surface fragile modeling
+					assumptions before they reach a result. The outcome is faster, auditable model
+					testing on data where the signal is small relative to the noise.
 				</p>
 				<p class="stack"><b>Stack:</b> Python · JAX · NumPy · SciPy · Slurm · HPC</p>
 			</div>
@@ -314,6 +352,9 @@
 				My doctoral research is in theoretical and observational cosmology — dark energy,
 				modified gravity, and large-scale structure — as a member of the
 				<a href="https://www.desi.lbl.gov/" target="_blank" rel="noopener noreferrer">DESI collaboration</a>.
+				In practice it is quantitative work: statistical inference on large-scale survey
+				data, comparison of competing models, uncertainty quantification, and robustness
+				to systematic error. The peer-reviewed papers below are the output of that work.
 			</p>
 			<p class="stats">
 				21 papers · 5,000+ citations · h-index 16 &nbsp;—&nbsp;
@@ -347,8 +388,9 @@
 					quantifying how uncertainty scales with event count and localization accuracy.
 				</p>
 				<p class="pub">
-					<strong>J. Pan</strong>, D. Huterer, C. Avestruz et al., <em>Determining the Hubble Constant through Cross-Correlation of Galaxies and Gravitational Waves</em> (2025),
-					<a href="https://arxiv.org/abs/2510.19931" target="_blank" rel="noopener noreferrer">arXiv:2510.19931</a> (under revision, Phys. Rev. D).
+					<strong>J. Pan</strong>, D. Huterer, C. Avestruz et al., <em>Determining the Hubble Constant through Cross-Correlation of Galaxies and Gravitational Waves</em>,
+					<a href="https://doi.org/10.1103/2d96-fg7f" target="_blank" rel="noopener noreferrer">Phys. Rev. D 113, 103532 (2026)</a>,
+					<a href="https://arxiv.org/abs/2510.19931" target="_blank" rel="noopener noreferrer">arXiv:2510.19931</a>.
 				</p>
 			</div>
 
@@ -406,13 +448,17 @@
 		<section class="section" id="contact">
 			<h2>Contact</h2>
 			<p>
-				I'm open to full-time opportunities in machine learning, AI research, and
-				quantitative modeling. Email is the best way to reach me.
+				I'm open to full-time roles in machine learning, AI research, quantitative
+				research, and quantitative modeling. Email is the best way to reach me.
 			</p>
 			<p>
 				<a href="mailto:jiamingp@umich.edu" class="contact-email">jiamingp@umich.edu</a>
 			</p>
 			<div class="socials">
+				<a href="Jiaming_Pan_CV.pdf" class="btn" target="_blank" rel="noopener noreferrer">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M5 21h14"/></svg>
+					Résumé
+				</a>
 				<a href="https://github.com/jiamingpan" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
 					<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58 0-.29-.01-1.04-.02-2.05-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.09 1.84 1.24 1.84 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.34-5.47-5.95 0-1.31.47-2.39 1.24-3.23-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.25 2.88.12 3.18.77.84 1.23 1.92 1.23 3.23 0 4.62-2.81 5.64-5.49 5.94.43.37.81 1.1.81 2.22 0 1.6-.01 2.89-.01 3.29 0 .32.22.7.83.58A12.01 12.01 0 0 0 24 12.5C24 5.87 18.63.5 12 .5z"/></svg>
 				</a>
