@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Does RL post-training change how a model quantizes? — Jiaming Pan</title>
+	<meta name="description" content="A single-GPU study of whether GRPO post-training gains survive 4-bit AWQ quantization on Qwen2.5-1.5B, with a vLLM serving benchmark." />
+	<meta name="author" content="Jiaming Pan" />
+	<meta property="og:title" content="Does RL post-training change how a model quantizes?" />
+	<meta property="og:description" content="A single-GPU GRPO × quantization study with a vLLM serving benchmark." />
+	<meta property="og:type" content="article" />
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+	<style>
+		:root {
+			--bg: #fcfcfc; --text: #16181d; --muted: #5f6672; --faint: #9aa1ac;
+			--border: #e7e7ea; --accent: #2557d6; --nav-bg: rgba(252, 252, 252, 0.82);
+			--maxw: 680px;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--bg: #0e1014; --text: #e6e8ec; --muted: #9aa1ac; --faint: #6b7280;
+				--border: #262a33; --accent: #7aa2f7; --nav-bg: rgba(14, 16, 20, 0.82);
+			}
+		}
+		* { box-sizing: border-box; margin: 0; padding: 0; }
+		html { scroll-behavior: smooth; }
+		body {
+			font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+			background: var(--bg); color: var(--text); line-height: 1.7; font-size: 16px;
+			-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+		}
+		a { color: var(--accent); text-decoration: none; }
+		a:hover { text-decoration: underline; }
+		.nav {
+			position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+			background: var(--nav-bg); backdrop-filter: saturate(180%) blur(12px);
+			-webkit-backdrop-filter: saturate(180%) blur(12px); border-bottom: 1px solid var(--border);
+		}
+		.nav-inner {
+			max-width: var(--maxw); margin: 0 auto; padding: 14px 24px;
+			display: flex; align-items: center; justify-content: space-between;
+		}
+		.nav-name { font-weight: 600; font-size: 15px; color: var(--text); }
+		.nav-name:hover { text-decoration: none; }
+		.nav-links a { color: var(--muted); font-size: 14px; font-weight: 500; }
+		.nav-links a:hover { color: var(--accent); text-decoration: none; }
+		main { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+		.article { padding: 120px 0 60px; }
+		.back { font-size: 14px; color: var(--muted); }
+		.title { font-size: 32px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; margin: 24px 0 8px; }
+		.meta { font-size: 14px; color: var(--faint); margin-bottom: 36px; }
+		.article h2 {
+			font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.09em;
+			color: var(--accent); margin: 40px 0 14px;
+		}
+		.article p { margin-bottom: 16px; }
+		.article ul { margin: 0 0 16px 22px; }
+		.article li { margin-bottom: 8px; }
+		.lead { font-size: 18px; color: var(--muted); }
+		code {
+			font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13.5px;
+			background: rgba(127,127,127,0.12); padding: 1px 5px; border-radius: 4px;
+		}
+		.callout {
+			border-left: 3px solid var(--accent); padding: 4px 0 4px 16px;
+			color: var(--muted); margin: 0 0 16px;
+		}
+		figure { margin: 8px 0 22px; }
+		figure img { width: 100%; height: auto; border: 1px solid var(--border); border-radius: 8px; background: #fff; }
+		figcaption { font-size: 13px; color: var(--faint); margin-top: 8px; text-align: center; }
+		.tbl-wrap { overflow-x: auto; margin: 0 0 8px; }
+		table { border-collapse: collapse; width: 100%; font-size: 14px; }
+		th, td { border-bottom: 1px solid var(--border); padding: 8px 10px; text-align: right; }
+		th:first-child, td:first-child { text-align: left; }
+		thead th { color: var(--muted); font-weight: 600; border-bottom: 1.5px solid var(--border); }
+		tbody tr td { font-variant-numeric: tabular-nums; }
+		footer { border-top: 1px solid var(--border); padding: 28px 0; color: var(--faint); font-size: 14px; }
+		footer .inner { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+	</style>
+</head>
+<body>
+	<nav class="nav">
+		<div class="nav-inner">
+			<a href="../index.html" class="nav-name">Jiaming Pan</a>
+			<div class="nav-links"><a href="../index.html#writing">&larr; All writing</a></div>
+		</div>
+	</nav>
+
+	<main>
+		<article class="article">
+			<a class="back" href="../index.html#writing">&larr; Back to writing</a>
+			<h1 class="title">Does RL post-training change how a model quantizes?</h1>
+			<p class="meta">2026 · single-GPU GRPO × quantization study ·
+				<a href="https://github.com/JiamingPan/posttrain-quant-serve" target="_blank" rel="noopener noreferrer">repo</a>
+			</p>
+
+			<p class="lead">
+				Most people quantize a model and report the perplexity hit. I asked a different
+				question: does reinforcement-learning post-training change how a model behaves
+				once it's quantized — and do the RL gains survive 4 bits?
+			</p>
+
+			<h2>The question</h2>
+			<p>
+				RL post-training (here, GRPO) reshapes a model's output distribution; post-training
+				quantization (AWQ at W4G128) perturbs its weights. The natural question is whether
+				they interact: if you take an RL-tuned model and quantize it to 4-bit for serving,
+				do the gains hold, or does quantization wash them out? For any inference or
+				model-efficiency team this is a real concern — if RL gains don't survive
+				quantization, the serving stack is shipping a quietly degraded model.
+			</p>
+			<p>
+				Scope, kept deliberately tight: single-GPU, Qwen2.5-1.5B-Instruct, GSM8K with
+				verifiable rewards, AWQ W4G128, served with vLLM. This is not a distributed-training
+				paper — the research question is the spine, not the infrastructure.
+			</p>
+
+			<h2>Setup, and the decisions that matter</h2>
+			<p>
+				I trained with <strong>GRPO using verifiable rewards</strong> — an answer-checking
+				grader rather than a learned reward model — which gives a clean, cheap training signal.
+				Two scope decisions did most of the work:
+			</p>
+			<ul>
+				<li><strong>Why 1.5B, not 0.5B.</strong> A 0.5B model has no redundancy to absorb
+				4-bit error, so at W4 it collapses to the floor regardless of training — which would
+				confound the whole thesis. At 1.5B the base model stays functional at W4, so any
+				base-vs-GRPO gap after quantization is attributable to the RL, not to the model being
+				too small to quantize.</li>
+				<li><strong>Why single-GPU, no FSDP.</strong> At ~3&nbsp;GB in bf16, 1.5B fits
+				comfortably on one A40. Sharding it would be complexity with no benefit; FSDP is the
+				right tool once you're at 7B+. Knowing when <em>not</em> to reach for a tool is part
+				of the design.</li>
+			</ul>
+
+			<h2>Getting the RL dynamics right first</h2>
+			<p>
+				Early GRPO runs underperformed in a way that looked like a learning-rate problem but
+				wasn't — the advantages were collapsing, so the policy had almost no signal to learn
+				from. Fixing the advantage estimation and the sampling setup turned the run around.
+				That work matters here for one reason: the quantization comparison is only meaningful
+				if the FP16 GRPO model is a genuine improvement over the base. With the dynamics
+				sorted, GRPO produced a real, if modest, held-out gain on GSM8K — which is the gain
+				whose survival under 4-bit I set out to test.
+			</p>
+
+			<h2>Does the gain survive 4 bits?</h2>
+			<p>
+				The core experiment is a controlled comparison: {base, GRPO} &times; {FP16, NF4 W4,
+				AWQ W4G128}, all evaluated on the same held-out GSM8K test set (n = 100).
+			</p>
+			<figure>
+				<img src="img/accuracy_matrix_test100.png" alt="Bar chart of GSM8K test100 accuracy for base vs GRPO at FP16, bnb-NF4 W4, and AWQ W4G128. GRPO is higher in every setting: 0.72 vs 0.68 at FP16, 0.68 vs 0.65 at NF4, 0.67 vs 0.58 at AWQ." />
+				<figcaption>GSM8K test100 accuracy, Qwen2.5-1.5B-Instruct. GRPO (blue) stays ahead of the base model (grey) under FP16 and both 4-bit schemes.</figcaption>
+			</figure>
+			<p>
+				On Qwen2.5-1.5B-Instruct, GRPO improved held-out GSM8K accuracy from 0.68 to 0.72 in
+				FP16 (&Delta;&nbsp;+0.04). After 4-bit quantization, the GRPO model still beat the base
+				model: 0.68 vs 0.65 under bitsandbytes NF4 (&Delta;&nbsp;+0.03), and 0.67 vs 0.58 under
+				AWQ W4G128 (&Delta;&nbsp;+0.09). The effect is modest at n&nbsp;=&nbsp;100, but the key
+				observation is that the RL gain did not disappear under W4.
+			</p>
+			<p>
+				Put another way: the gain-survival under NF4 is essentially flat (&minus;0.01 relative
+				to the FP16 gap), and under AWQ it is slightly larger (+0.05). I read the AWQ result as
+				suggestive candidate evidence rather than a locked conclusion — at this sample size I
+				would not overclaim a quantization-scheme effect. The defensible statement is the
+				narrow one: there is no evidence that this GRPO recipe makes Qwen2.5-1.5B
+				<em>harder</em> to quantize, and good evidence that the held-out gain carries through W4.
+			</p>
+
+			<h2>Serving: a deployment sanity check</h2>
+			<p>
+				I also added a vLLM serving benchmark to close the deployment loop, and I want to
+				report it honestly: AWQ preserved the accuracy-side GRPO result, but it did
+				<em>not</em> improve throughput or latency for this small 1.5B model on one A40. The
+				point of the serving code is to verify the checkpoint can actually be served and
+				measured end-to-end — not to claim a speedup.
+			</p>
+			<div class="tbl-wrap">
+			<table>
+				<thead>
+					<tr><th>Config (batch&nbsp;64)</th><th>Throughput (tok/s)</th><th>p50 latency (s)</th><th>p95 latency (s)</th><th>Peak mem (GB)</th></tr>
+				</thead>
+				<tbody>
+					<tr><td>Base FP16</td><td>5377.1</td><td>1.226</td><td>2.200</td><td>40.27</td></tr>
+					<tr><td>GRPO FP16</td><td>5687.7</td><td>1.238</td><td>2.045</td><td>40.27</td></tr>
+					<tr><td>Base AWQ W4G128</td><td>3052.6</td><td>2.307</td><td>2.953</td><td>40.23</td></tr>
+					<tr><td>GRPO AWQ W4G128</td><td>3275.8</td><td>2.311</td><td>3.043</td><td>40.23</td></tr>
+				</tbody>
+			</table>
+			</div>
+			<p>
+				Under batch-64, FP16 reached roughly 5.4k&ndash;5.7k generated tokens/sec, while AWQ
+				reached about 3.1k&ndash;3.3k tokens/sec — slower, not faster. Two honest caveats. First,
+				vLLM batching clearly worked: throughput scaled strongly with batch size, which is the
+				expected and reassuring behavior. Second, the peak-memory column is <em>not</em> a clean
+				model-footprint comparison — vLLM reserves memory for KV-cache capacity, so the figures
+				reflect served capacity rather than the quantized weight size. The honest conclusion is
+				that quantization preserved accuracy here without buying a serving win; a latency or
+				throughput advantage from W4 would show up on larger models or under tighter
+				memory/concurrency regimes.
+			</p>
+
+			<h2>Limitations and what's next</h2>
+			<p>
+				This is a single benchmark family at n&nbsp;=&nbsp;100, so the accuracy results are
+				suggestive rather than statistically locked, and the AWQ gain-survival number in
+				particular should be read as candidate evidence. On the systems side, the serving study
+				measured throughput and end-to-end p50/p95 latency; per-token latency such as
+				time-to-first-token is future work, as is a memory-constrained capacity sweep where W4
+				would be expected to help. The natural next pieces are a 7B run where sharding actually
+				matters, and a three-engine comparison — vLLM vs SGLang vs TensorRT-LLM — on the same
+				GRPO-then-quantized checkpoint.
+			</p>
+			<p>
+				Code and full results:
+				<a href="https://github.com/JiamingPan/posttrain-quant-serve" target="_blank" rel="noopener noreferrer">github.com/JiamingPan/posttrain-quant-serve</a>.
+				Happy to talk about any of it — <a href="mailto:jiamingp@umich.edu">jiamingp@umich.edu</a>.
+			</p>
+		</article>
+	</main>
+
+	<footer><div class="inner">&copy; 2026 Jiaming Pan</div></footer>
+</body>
+</html>
