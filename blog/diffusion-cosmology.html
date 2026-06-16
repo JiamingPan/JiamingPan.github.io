@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>When does a diffusion model stop memorizing cosmological fields? — Jiaming Pan</title>
+	<meta name="description" content="A short write-up of my AstroAI 2026 poster on memorization, generalization, and calibration in diffusion models trained on CAMELS HI maps." />
+	<meta name="author" content="Jiaming Pan" />
+	<meta property="og:title" content="When does a diffusion model stop memorizing cosmological fields?" />
+	<meta property="og:description" content="Memorization, generalization, and calibration in diffusion models for CAMELS neutral-hydrogen maps." />
+	<meta property="og:type" content="article" />
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+	<style>
+		:root {
+			--bg: #fcfcfc; --text: #16181d; --muted: #5f6672; --faint: #9aa1ac;
+			--border: #e7e7ea; --accent: #2557d6; --nav-bg: rgba(252, 252, 252, 0.82);
+			--maxw: 680px;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--bg: #0e1014; --text: #e6e8ec; --muted: #9aa1ac; --faint: #6b7280;
+				--border: #262a33; --accent: #7aa2f7; --nav-bg: rgba(14, 16, 20, 0.82);
+			}
+		}
+		* { box-sizing: border-box; margin: 0; padding: 0; }
+		html { scroll-behavior: smooth; }
+		body {
+			font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+			background: var(--bg); color: var(--text); line-height: 1.7; font-size: 16px;
+			-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+		}
+		a { color: var(--accent); text-decoration: none; }
+		a:hover { text-decoration: underline; }
+		.nav {
+			position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+			background: var(--nav-bg); backdrop-filter: saturate(180%) blur(12px);
+			-webkit-backdrop-filter: saturate(180%) blur(12px); border-bottom: 1px solid var(--border);
+		}
+		.nav-inner {
+			max-width: var(--maxw); margin: 0 auto; padding: 14px 24px;
+			display: flex; align-items: center; justify-content: space-between;
+		}
+		.nav-name { font-weight: 600; font-size: 15px; color: var(--text); }
+		.nav-name:hover { text-decoration: none; }
+		.nav-links a { color: var(--muted); font-size: 14px; font-weight: 500; }
+		.nav-links a:hover { color: var(--accent); text-decoration: none; }
+		main { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+		.article { padding: 120px 0 60px; }
+		.back { font-size: 14px; color: var(--muted); }
+		.title { font-size: 32px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; margin: 24px 0 8px; }
+		.meta { font-size: 14px; color: var(--faint); margin-bottom: 36px; }
+		.article h2 {
+			font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.09em;
+			color: var(--accent); margin: 40px 0 14px;
+		}
+		.article p { margin-bottom: 16px; }
+		.article ul { margin: 0 0 16px 22px; }
+		.article li { margin-bottom: 8px; }
+		.lead { font-size: 18px; color: var(--muted); }
+		code {
+			font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13.5px;
+			background: rgba(127,127,127,0.12); padding: 1px 5px; border-radius: 4px;
+		}
+		.callout {
+			border-left: 3px solid var(--accent); padding: 4px 0 4px 16px;
+			color: var(--muted); margin: 0 0 16px;
+		}
+		figure { margin: 8px 0 22px; }
+		figure img { width: 100%; height: auto; border: 1px solid var(--border); border-radius: 8px; background: #fff; }
+		figcaption { font-size: 13px; color: var(--faint); margin-top: 8px; text-align: center; }
+		.tbl-wrap { overflow-x: auto; margin: 0 0 8px; }
+		table { border-collapse: collapse; width: 100%; font-size: 14px; }
+		th, td { border-bottom: 1px solid var(--border); padding: 8px 10px; text-align: right; }
+		th:first-child, td:first-child { text-align: left; }
+		thead th { color: var(--muted); font-weight: 600; border-bottom: 1.5px solid var(--border); }
+		tbody tr td { font-variant-numeric: tabular-nums; }
+		footer { border-top: 1px solid var(--border); padding: 28px 0; color: var(--faint); font-size: 14px; }
+		footer .inner { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+	</style>
+</head>
+<body>
+	<nav class="nav">
+		<div class="nav-inner">
+			<a href="../index.html" class="nav-name">Jiaming Pan</a>
+			<div class="nav-links"><a href="../index.html#writing">&larr; All writing</a></div>
+		</div>
+	</nav>
+
+	<main>
+		<article class="article">
+			<a class="back" href="../index.html#writing">&larr; Back to writing</a>
+			<h1 class="title">When does a diffusion model stop memorizing cosmological fields?</h1>
+			<p class="meta">2026 · AstroAI poster write-up ·
+				<a href="https://github.com/JiamingPan/diffusion-models-simulation-data" target="_blank" rel="noopener noreferrer">repo</a>
+			</p>
+
+			<p class="lead">
+				A generative model for scientific simulation has to do more than make plausible
+				pictures. For cosmology, the useful question is whether the model has learned a
+				distribution of fields, or whether it is quietly returning near-copies of the maps
+				it saw during training.
+			</p>
+
+			<h2>The problem</h2>
+			<p>
+				Diffusion models are attractive as fast priors for cosmological fields: sample a
+				map, condition it on physical parameters, and use it downstream in inference. But
+				that only works if the generated maps are new, statistically faithful, and sensitive
+				to the requested cosmology. Visual realism is not enough.
+			</p>
+			<p>
+				I studied this on CAMELS IllustrisTNG neutral-hydrogen maps. Each map is a
+				128&nbsp;&times;&nbsp;128 slice of an HI field, and the model is a 2D U-Net diffusion
+				model trained across a sweep of training-set sizes, from
+				<code>N<sub>2D</sub> = 2<sup>6</sup></code> to <code>2<sup>15</sup></code> fields.
+				For the conditional runs, the model receives six CAMELS parameters:
+				&Omega;<sub>m</sub>, &sigma;<sub>8</sub>, A<sub>SN1</sub>, A<sub>AGN1</sub>,
+				A<sub>SN2</sub>, and A<sub>AGN2</sub>.
+			</p>
+
+			<h2>Measuring copying</h2>
+			<p>
+				For each generated map <code>x<sub>j</sub></code>, I compare it with every training map
+				<code>y<sub>i</sub></code> and keep the closest match:
+				<code>s<sub>j</sub> = max<sub>i</sub> sim(x<sub>j</sub>, y<sub>i</sub>)</code>. A high value
+				means the generated map is nearly a copy of one training map. I measure this in
+				pixel space and in two feature spaces, PCA and SSCD, so the conclusion is not tied
+				to one image metric.
+			</p>
+			<p>
+				The generalization score is the fraction of generated maps that are not unusually
+				close to the training set. In the poster I use
+				<code>GL = Pr[s<sub>j</sub> &lt; &tau;]</code>, where <code>&tau;</code> is the 95th percentile
+				of train-vs-train nearest-neighbor similarity in PCA space. Roughly:
+				<code>GL &approx; 0</code> means copying, and <code>GL &approx; 1</code> means the samples
+				are no closer to the training set than real training maps are to each other.
+			</p>
+
+			<figure>
+				<img src="img/nf_generalize_fig2_poster_pca_generalization_q95_serif_clean.png" alt="Generalization score versus training set size for U-Net 64, 128, and 256 diffusion models. The curves rise from near zero to near one as the training set grows." />
+				<figcaption>Generated maps move from training-set-like to novel over a narrow range of training-set sizes.</figcaption>
+			</figure>
+
+			<h2>The transition</h2>
+			<p>
+				The main result is a sharp memorization-to-generalization transition. With little
+				data, generated fields closely match individual training slices. With more data,
+				the same model family produces fields that are much less training-set-like while
+				retaining the visual and statistical structure of real HI maps.
+			</p>
+			<p>
+				I would not read the exact threshold as a universal constant. It depends on the
+				architecture, feature metric, training budget, and dataset. The useful point is more
+				practical: nearest-neighbor checks can tell whether a generative emulator is in the
+				copying regime before it is used for inference.
+			</p>
+
+			<h2>Conditioning is a separate test</h2>
+			<p>
+				Novel samples are still not enough. If I ask the conditional model for a different
+				cosmology, the generated fields should move with that request. To test this, I pass
+				generated maps through a frozen VGG16-feature encoder with an MLP regression head
+				and recover <code>&theta;<sub>rec</sub></code> from each generated field. On real held-out
+				HI maps, this encoder reaches <code>R<sup>2</sup> = 0.91</code> for
+				&Omega;<sub>m</sub>, so I focus the cleanest calibration plot on that parameter.
+			</p>
+			<p>
+				The high-data regime tracks the requested matter density much better than the
+				memorization regime. The important detail is the error bars: small seed-to-seed
+				scatter is not automatically good. In the memorization regime, the bars can look
+				tight while the median is centered on the wrong value. Past the transition, the
+				scatter is a more honest reflection of uncertainty around the requested cosmology.
+			</p>
+
+			<figure>
+				<img src="img/bias_probe_omega_m_best_vgg_poster.png" alt="Recovered versus requested Omega_m for memorization and generalization regimes. The high-data generalization regime tracks the ideal recovery line more closely." />
+				<figcaption>Recovering &Omega;<sub>m</sub> from generated maps with a frozen VGG16 encoder. The slope is probe-calibrated; the main message is the bias and uncertainty behavior.</figcaption>
+			</figure>
+
+			<h2>Physical fidelity</h2>
+			<p>
+				I also check ordinary summary statistics. The one-point PDF asks whether the pixel
+				values have the right distribution; the power spectrum <code>P(k)</code> asks whether
+				the field has the right structure across spatial scales. In a full-data U-Net-128
+				run, low-<code>k</code> large-scale power matches first, while high-<code>k</code>
+				small-scale power catches up later in training.
+			</p>
+
+			<figure>
+				<img src="img/learning_process_pk_parallel_poster.png" alt="Generated and real power spectra at early, middle, and final training checkpoints. The generated power spectrum approaches the real reference through training." />
+				<figcaption>Generated power spectra approach the real reference through training for the full-data U-Net-128 run.</figcaption>
+			</figure>
+
+			<h2>What I take from it</h2>
+			<p>
+				The transition from memorization to generalization, known in natural-image settings,
+				also appears in CAMELS HI fields. For scientific simulation, that transition is not
+				just a model-quality detail. It changes how much we should trust the uncertainty
+				bars and whether a conditional generator is actually responding to the physical
+				parameters we ask for.
+			</p>
+			<p>
+				The practical lesson is simple: before using a diffusion model as a cosmological
+				emulator, check novelty, calibration, and physical summary statistics separately.
+				A model can match a power spectrum and still be biased as a conditional generator.
+				The diagnostics here are meant to catch that failure mode early.
+			</p>
+			<p>
+				Code and poster materials:
+				<a href="https://github.com/JiamingPan/diffusion-models-simulation-data" target="_blank" rel="noopener noreferrer">github.com/JiamingPan/diffusion-models-simulation-data</a>.
+				Questions or suggestions: <a href="mailto:jiamingp@umich.edu">jiamingp@umich.edu</a>.
+			</p>
+		</article>
+	</main>
+
+	<footer><div class="inner">&copy; 2026 Jiaming Pan</div></footer>
+</body>
+</html>
