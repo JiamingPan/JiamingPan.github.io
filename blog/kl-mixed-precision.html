@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<!--
+Conceptual argument + two safe results: a reproducible digits demo (public sklearn dataset)
+and a linear-probe observation on open models. Deliberately keeps OUT the internal
+mixed-precision quantization benchmarks / methods / models / eval numbers.
+-->
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Where would you spend your last bit? — Jiaming Pan</title>
+	<meta name="description" content="Which weights deserve precision in a compressed model? Weight error and loss curvature aim at the wrong target. A better score measures how much a weight moves the output distribution — shown on a small digits model and backed by a linear probe." />
+	<meta name="author" content="Jiaming Pan" />
+	<meta property="og:title" content="Where would you spend your last bit?" />
+	<meta property="og:description" content="Choosing which weights keep precision in a compressed model — with a reproducible demonstration." />
+	<meta property="og:type" content="article" />
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+	<style>
+		:root {
+			--bg: #fcfcfc; --text: #16181d; --muted: #5f6672; --faint: #9aa1ac;
+			--border: #e7e7ea; --accent: #2557d6; --nav-bg: rgba(252, 252, 252, 0.82);
+			--maxw: 680px;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--bg: #0e1014; --text: #e6e8ec; --muted: #9aa1ac; --faint: #6b7280;
+				--border: #262a33; --accent: #7aa2f7; --nav-bg: rgba(14, 16, 20, 0.82);
+			}
+		}
+		* { box-sizing: border-box; margin: 0; padding: 0; }
+		html { scroll-behavior: smooth; }
+		body {
+			font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+			background: var(--bg); color: var(--text); line-height: 1.7; font-size: 16px;
+			-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+		}
+		a { color: var(--accent); text-decoration: none; }
+		a:hover { text-decoration: underline; }
+		.nav {
+			position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+			background: var(--nav-bg); backdrop-filter: saturate(180%) blur(12px);
+			-webkit-backdrop-filter: saturate(180%) blur(12px); border-bottom: 1px solid var(--border);
+		}
+		.nav-inner {
+			max-width: var(--maxw); margin: 0 auto; padding: 14px 24px;
+			display: flex; align-items: center; justify-content: space-between;
+		}
+		.nav-name { font-weight: 600; font-size: 15px; color: var(--text); }
+		.nav-name:hover { text-decoration: none; }
+		.nav-links a { color: var(--muted); font-size: 14px; font-weight: 500; }
+		.nav-links a:hover { color: var(--accent); text-decoration: none; }
+		main { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+		.article { padding: 120px 0 60px; }
+		.back { font-size: 14px; color: var(--muted); }
+		.title { font-size: 32px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; margin: 24px 0 8px; }
+		.meta { font-size: 14px; color: var(--faint); margin-bottom: 36px; }
+		.article h2 {
+			font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.09em;
+			color: var(--accent); margin: 40px 0 14px;
+		}
+		.article p { margin-bottom: 16px; }
+		.article ul { margin: 0 0 16px 22px; }
+		.article li { margin-bottom: 8px; }
+		.lead { font-size: 18px; color: var(--muted); }
+		code {
+			font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13.5px;
+			background: rgba(127,127,127,0.12); padding: 1px 5px; border-radius: 4px;
+		}
+		.eq {
+			display: block; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+			font-size: 14px; background: rgba(127,127,127,0.08); border: 1px solid var(--border);
+			border-radius: 8px; padding: 12px 14px; margin: 0 0 16px; overflow-x: auto;
+		}
+		.callout {
+			border-left: 3px solid var(--accent); padding: 4px 0 4px 16px;
+			color: var(--muted); margin: 0 0 16px;
+		}
+		figure { margin: 8px 0 22px; }
+		figure img { width: 100%; height: auto; border: 1px solid var(--border); border-radius: 8px; background: #fff; }
+		figcaption { font-size: 13px; color: var(--faint); margin-top: 8px; text-align: center; }
+		.tbl-wrap { overflow-x: auto; margin: 0 0 8px; }
+		table { border-collapse: collapse; width: 100%; font-size: 14px; }
+		th, td { border-bottom: 1px solid var(--border); padding: 8px 10px; text-align: right; }
+		th:first-child, td:first-child { text-align: left; }
+		thead th { color: var(--muted); font-weight: 600; border-bottom: 1.5px solid var(--border); }
+		tbody tr td { font-variant-numeric: tabular-nums; }
+		tbody tr.best td { color: var(--accent); font-weight: 600; }
+		.cap { font-size: 13px; color: var(--faint); margin: 0 0 20px; }
+		footer { border-top: 1px solid var(--border); padding: 28px 0; color: var(--faint); font-size: 14px; }
+		footer .inner { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+	</style>
+</head>
+<body>
+	<nav class="nav">
+		<div class="nav-inner">
+			<a href="../index.html" class="nav-name">Jiaming Pan</a>
+			<div class="nav-links"><a href="../index.html#blog">&larr; Blog</a></div>
+		</div>
+	</nav>
+
+	<main>
+		<article class="article">
+			<a class="back" href="../index.html#blog">&larr; Back to blog</a>
+			<h1 class="title">Where would you spend your last bit?</h1>
+			<p class="meta">2026 · notes on low-bit LLM inference</p>
+
+			<p class="lead">
+				Compress a language model hard enough and you have to make a choice you don't normally
+				think about: a few weights keep their precision and most don't. Around two bits per
+				weight there's no room to be faithful everywhere, so you protect a chosen few and let the
+				rest degrade. Which few? That question turned out to be more interesting than the
+				compression itself, and I think the standard way of answering it aims at the wrong target.
+			</p>
+
+			<h2>The thing that bugged me</h2>
+			<p>
+				I ran into this while pushing an open model down to very low precision. Once the pipeline
+				worked, the obvious knob was where to spend a fixed budget of leftover bits. And almost
+				immediately I hit the annoyance that drove everything after: I could improve the
+				reconstruction — lower the weight error, lower perplexity — and still watch some
+				downstream tasks get <em>worse</em>. Below a certain precision, "closer to the original
+				weights" and "better at the task" stop pointing the same way. When the number you're
+				minimizing isn't the number you care about, minimizing it harder can cost you.
+			</p>
+
+			<h2>A sensitivity metric is a bet on what matters</h2>
+			<p>
+				Deciding which weights to protect means scoring each one by how much its rounding error
+				hurts — and you can't do that without saying what "hurts" means. The quick answer is
+				weight error: guard the weights that move most when you round them. It's fast, and it
+				never once looks at the model. Rounding a dead weight by a lot can be harmless; nudging a
+				load-bearing one can wreck an answer. Distance in weight space isn't damage.
+			</p>
+			<p>
+				The better-known answer is loss curvature — the second-order, Hessian-flavored score most
+				methods reach for. At least it runs the question through the model. What I don't trust is
+				that it squeezes the whole output into one scalar loss and measures the curvature of
+				<em>that</em>. At inference I never ship a loss value. I ship a next-token distribution,
+				and I want that distribution — the gap between the right answer and the runner-up, the
+				ordering of plausible continuations — to survive the compression. Curvature of a scalar
+				has already thrown that away.
+			</p>
+
+			<h2>Preserve the output, not the loss</h2>
+			<p>
+				So write the goal down the way you actually mean it. Pick the inputs you care about and
+				ask that the compressed model's next-token distribution stay close to the original's on
+				them:
+			</p>
+			<code class="eq">distortion = average over inputs of  D( p_original(x) || p_compressed(x) )</code>
+			<p>
+				Let <code>D</code> be KL and see what a small rounding error does to it. To second order,
+				KL between two softmax distributions is a quadratic form in how the logits shift, weighted
+				by the softmax's own Fisher matrix <code>F = diag(p) − p pᵀ</code>. Trace one weight's
+				error forward to the logits and each weight picks up a score:
+			</p>
+			<code class="eq">sensitivity(weight) ≈ average over inputs of  (rounding error)² × (logit shift)ᵀ F (logit shift)</code>
+			<p>
+				A weight is sensitive if changing it actually moves the model's output, measured the way
+				the softmax measures distance. There's no Hessian to invert, and the "inputs you care
+				about" clause isn't decoration: it's an average over a set you choose, so pointing it at
+				the task you'll be judged on protects the weights that carry <em>that</em> behavior.
+			</p>
+
+			<h2>A version small enough to check</h2>
+			<p>
+				The claim is easy to state and easy to fool yourself about, so here it is on a model
+				small enough to compute everything exactly: multinomial logistic regression on
+				scikit-learn's 8&times;8 handwritten digits. Train it, then quantize the weight matrix to
+				a coarse 7-level grid — but spend a small budget keeping the top 10% of weights at full
+				precision. The only thing that varies is <em>how you choose that 10%</em>: by magnitude,
+				by loss-gradient, or by the output-KL score above. Averaged over eight seeds:
+			</p>
+			<div class="tbl-wrap">
+			<table>
+				<thead>
+					<tr><th>Which 10% is protected</th><th>Test accuracy</th><th>Output KL vs full precision</th></tr>
+				</thead>
+				<tbody>
+					<tr><td>Full precision (reference)</td><td>96.4%</td><td>&mdash;</td></tr>
+					<tr><td>Nothing — quantize all</td><td>93.0%</td><td>0.097</td></tr>
+					<tr><td>Largest magnitude</td><td>93.9%</td><td>0.077</td></tr>
+					<tr><td>Largest loss-gradient</td><td>94.6%</td><td>0.062</td></tr>
+					<tr class="best"><td>Largest output-KL / Fisher</td><td>95.3%</td><td>0.046</td></tr>
+				</tbody>
+			</table>
+			</div>
+			<p class="cap">
+				Same quantizer, same 10% budget; only the ranking changes. Protecting by output-KL
+				sensitivity recovers the most accuracy and moves the output distribution the least.
+				<a href="code/bit_protection_demo.py">Reproducible script (numpy + scikit-learn)</a>.
+			</p>
+			<p>
+				It's a toy on purpose — one linear model, one dataset, and the margins are a point or two.
+				But the ordering is the whole point, and it's the ordering the argument predicts: guarding
+				the biggest weights is the weakest use of the budget, the loss-gradient does better, and
+				scoring weights by how much they move the output distribution does best. Nothing here
+				depends on the model being small; it depends on measuring the right thing.
+			</p>
+
+			<h2>The damage is more structured than it looks</h2>
+			<p>
+				One more check, because the whole approach rests on an assumption: that the perturbation
+				from compression is <em>structured</em> rather than diffuse noise smeared across the
+				representation. If it's noise, no clever metric saves you. The cheapest test I could think
+				of: take the hidden states from the original model and the compressed one and train a
+				plain linear classifier to tell them apart. On an open model, one linear direction
+				separates "original" from "compressed" activations at an <strong>AUC of about 0.99</strong>.
+				The harm from compression isn't spread everywhere — it lives in a few directions, which is
+				exactly the regime where a metric that knows <em>where</em> the model is fragile has
+				something real to grab.
+			</p>
+
+			<h2>What I'd flag</h2>
+			<p>
+				The sensitivity score is a second-order, diagonal approximation: it ignores interactions
+				between weights and gets shakier the further you drift from the operating point. The
+				digits result is a sanity check on a linear model, not a large-scale claim. The probe says
+				structure exists to exploit, not that any particular allocation wins. And "choose your
+				inputs" cuts both ways — a lazy calibration set will confidently protect the wrong things.
+			</p>
+
+			<h2>Takeaway</h2>
+			<p>
+				The fix here was never a new algorithm. It was refusing to keep optimizing a proxy after
+				I'd watched the proxy lie to me. "Which weights moved the most" is easy to compute and
+				easy to believe. "Which weights change what the model does" is the one worth the effort,
+				and once you write it as a divergence between output distributions it's computable too —
+				and, at least on a model small enough to check, it spends the budget better. Happy to get
+				into any of it — <a href="mailto:jiamingp@umich.edu">jiamingp@umich.edu</a>.
+			</p>
+		</article>
+	</main>
+
+	<footer><div class="inner">&copy; 2026 Jiaming Pan</div></footer>
+</body>
+</html>
