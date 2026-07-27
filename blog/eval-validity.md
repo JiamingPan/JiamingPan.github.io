@@ -1,16 +1,18 @@
-# What Does Your Agent Eval Prove?
+# Measuring the Harness, Not the Model
 
-Your agent eval is probably measuring the wrong thing. The metric may be computed correctly. The problem is often the conclusion attached to it.
+The first time I ran the offline evaluation suite for my research agent, nearly every rate came back as 1.00. Hit at one, mean reciprocal rank, citation grounding, tool-call success, refusal accuracy, leakage guard, trajectory contract, trace completeness, and recovery contract all passed.
 
-I ran into this while building an offline evaluation harness for a small research agent. The runtime has a bounded ReAct loop and exactly three tools: document search, price retrieval, and an event study. The harness checks retrieval, refusal, citation handling, tool trajectories, traces, recovery, and temporal leakage. Its checked-in results are all clean. That does not make the agent good.
+The results table looked much stronger than the system. I knew the model had not suddenly become perfect. In fact, the checked-in suite did not use a live model for most of those scores. It used deterministic stand-ins over a small set of fixtures. What had become reliable was the harness around the model.
 
-It means a set of specific mechanisms behaved as expected on a small set of specific cases. Evaluation becomes useful only when the reported claim stays inside that boundary. Three parts of the system made this distinction concrete for me.
+That sounds like a semantic distinction, but it changed how I read the entire table. A passing evaluation only means something when I can say exactly what was held fixed, what was allowed to vary, and what conclusion the score supports. I ended up learning that lesson three times in the same project.
 
-## Make leakage fail the run
+## The check that had to stop the run
 
-The event-study tool estimates abnormal returns around an event. Its expected-return baseline uses close-to-close log returns strictly before the event window starts. If a baseline includes returns from the window it is meant to evaluate, the resulting cumulative abnormal return is contaminated.
+The first case was temporal leakage in the event-study tool.
 
-It is easy to acknowledge this risk in documentation. That is not enough. A caveat in a README depends on every future caller, refactor, and analysis remembering the caveat. The implementation instead turns the temporal boundary into an assertion:
+The tool estimates abnormal returns around an event. It builds an expected-return baseline from close-to-close log returns before the event window, then compares the event-window returns with that baseline. If any date from the event window enters the baseline, the result is contaminated. The calculation can still produce a clean-looking cumulative abnormal return and confidence interval. They just no longer answer the intended question.
+
+I did not want that assumption to live only in the README. Documentation can explain that the baseline should be pre-event, but it cannot prevent a later refactor from moving the cutoff by one row. So the implementation makes the condition executable:
 
 ```python
 def _assert_no_baseline_leakage(baseline_index, baseline_cutoff):
@@ -21,57 +23,59 @@ def _assert_no_baseline_leakage(baseline_index, baseline_cutoff):
     )
 ```
 
-`run_event_study` calls this assertion after constructing the baseline. The unavailable-result path calls it too whenever a cutoff can be established. A baseline date on or after the start of the event window does not produce a result with a warning attached. It stops the computation.
+`run_event_study` calls the assertion after constructing its baseline. A date on or after the start of the event window does not produce a result with a caveat attached. It raises an error and stops the run.
 
-That difference matters for evaluation validity. A footnote describes an assumption. An assertion enforces it. If the assertion fails, there is no valid event-study result to score. The evaluation harness tests both sides of the boundary: one clean baseline is accepted, and one baseline containing the cutoff date is rejected. The checked-in leakage-guard rate is 1.00 on two checks. That is a smoke test of the guard, not evidence that every possible event-study input is leakage-free.
+The offline harness tests both sides of that boundary. One clean baseline is accepted. A second baseline containing the cutoff date must raise the assertion. Both checks behave as expected, so the leakage-guard rate is 1.00 on two checks.
 
-The response also reports a leakage status of `passed`, `failed`, or `not_run`. The third state is necessary. If price data are unavailable, no daily returns can be formed, or an event cannot be aligned to a trading day, the system may not have enough information to evaluate the leakage condition. Calling that a pass would convert missing evidence into positive evidence. Calling it a failure would confuse an unavailable computation with a violated temporal boundary.
+That number is narrow, and that is fine. It says the guard accepted one known-good case and rejected one known-bad case. It does not show that every event study is leakage-free. The actual protection comes from putting the invariant inside the execution path. The metric tells me that this protection has not quietly disappeared.
 
-`not_run` preserves the difference. It says the check produced no verdict. That state is less convenient than a Boolean, but it prevents a dashboard or downstream evaluator from silently counting an unperformed check as successful. The validity of the reported leakage rate depends on keeping its denominator restricted to checks that actually ran.
+There was one more detail that initially looked minor. The event-study response reports the leakage status as `passed`, `failed`, or `not_run`. If price data are unavailable, daily returns cannot be formed, or the event cannot be aligned to a trading day, the system may not have enough information to evaluate leakage at all. Treating that case as a pass would turn missing evidence into positive evidence. Treating it as a failure would confuse an unavailable calculation with a violated cutoff. `not_run` preserves the difference.
 
-## Separate contract metrics from capability metrics
+This was the first place where the validity of an evaluation depended less on the score than on the states the score refused to collapse together.
 
-This is the central distinction in the harness. Some metrics test whether the software honors a contract. Other metrics would need to test whether a model can solve a task. Those are different experiments.
+## Two different kinds of passing
 
-The production loop permits only `search_docs`, `get_price_data`, and `run_event_study`. Model actions must be strict JSON. Pydantic rejects unknown fields and invalid arguments. The runtime dispatches one tool at a time, records a bounded public trace, and stops after at most six model steps. These are application-level contracts. I can test them without asking a live model to make intelligent decisions.
+The second lesson came from the orchestration metrics.
 
-The orchestration evaluation therefore uses a deterministic, observation-driven stand-in. Each case specifies an expected tool sequence. The stand-in emits the next scripted action, observes whether the tool succeeded, and continues through the real runtime. Five cases cover search, price retrieval, an event study, a two-tool sequence, and a recovery sequence in which price retrieval fails before document search succeeds.
+The agent runtime is deliberately small. A model can choose among exactly three tools: `search_docs`, `get_price_data`, and `run_event_study`. It must emit a strict JSON action. Pydantic validates the action and its arguments. Python dispatches one tool, records a public trace, returns the observation, and gives the model another turn. The loop stops after at most six model steps.
 
-The resulting trajectory-contract rate is 1.00 across five cases. This means the recorded tool order exactly matched the scripted order in all five. It does not mean a live model knows which order to choose.
+I wanted tests for that machinery, but asking a live model to drive every regression test would mix two sources of failure. If the test changed, I would not know whether the model had selected a different tool or whether the runtime had broken a contract.
 
-Trace-completeness rate is 1.00 across seven tool attempts. Every recorded attempt contains the required public fields: step, tool, normalized arguments, success status, and a sanitized error field. This shows that the runtime preserves its trace schema on those attempts. It says nothing about whether the attempted action was useful.
+The offline harness therefore uses a deterministic, observation-driven stand-in. Each case contains a scripted tool sequence. The stand-in emits the next action, reads the real observation, and continues through the real validation, dispatch, trace, and refusal code. Five cases cover document search, price retrieval, an event study, a two-tool sequence, and a recovery path where price retrieval fails before document search succeeds.
 
-Recovery-contract rate is 1.00 on one injected recovery case. In that case, the trace contains the expected failed tool call followed by the expected successful action. One case is enough to catch a broken recovery path in a smoke suite. It is not enough to estimate recovery capability across realistic failures. The mean number of attempted tool actions is 1.40 across the five orchestration cases, which describes the fixture set more than it describes an agent population.
+The trajectory-contract rate is 1.00 across those five cases. The recorded tool order matched the scripted order every time. Trace-completeness rate is 1.00 across seven tool attempts, meaning every attempt contains the required fields: step, tool, normalized arguments, success status, and sanitized error. Recovery-contract rate is 1.00 on the single injected recovery case. Mean tool steps is 1.40 across the five cases.
 
-These metrics use the real loop, validation, dispatch, and trace code. They deliberately do not use live-model planning. That is their strength. If a trajectory contract regresses while the scripted actions remain fixed, the problem is in the application path. If a separate live-model routing evaluation regresses while the contracts still pass, the problem is more likely in model behavior, prompting, or the distribution of tasks. Blending both layers into one end-to-end success rate would make the regression harder to locate.
+Those are useful regression results. They show that the runtime follows a supplied sequence, records it consistently, and can continue after the tested failure. They do not show that a live model knows which sequence to choose.
 
-The rest of the offline suite has similarly narrow scope. Retrieval uses real Chroma embeddings over three sanitized documents. Hit at one is 1.00 on three answerable queries, and mean reciprocal rank is 1.00 on the same three. Refusal accuracy is 1.00 across four cases, three answerable and one deliberately unrelated. Tool-call success rate is 1.00 across four calls. Citation-grounding rate is 1.00 across the three accepted answers.
+This is where a results table can become misleading. Contract metrics and capability metrics can both be green, but they answer different questions. A contract test holds the decision policy fixed and asks whether the application executes it correctly. A capability test lets the model make the decision and asks whether the decision was good. If I combine them into one end-to-end success rate, a regression tells me only that something changed somewhere.
 
-Those values are small offline smoke baselines. The deterministic stand-ins exercise system contracts, not live-model quality. The retrieval corpus contains three documents. The refusal threshold is a fixed cosine-similarity score of 0.25, and the suite checks one weak-evidence question. A perfect rate here verifies that the current fixture crosses the current threshold in the expected direction. It does not establish that 0.25 is calibrated for a larger corpus or a new domain.
+The same boundary applies to the other checked-in numbers. Retrieval uses real Chroma embeddings over three sanitized documents. Hit at one and mean reciprocal rank are both 1.00 on three answerable queries. Refusal accuracy is 1.00 across four cases, three answerable and one unrelated. Tool-call success is 1.00 across four calls. The refusal rule uses a fixed cosine-similarity threshold of 0.25.
 
-The small sample sizes are part of the report. They tell me what kind of conclusion the numbers can support. A five-case trajectory suite can provide fast regression coverage for five named paths. It cannot estimate how often an unconstrained model will select the right tool in deployment. Reporting the denominator keeps those two claims from being confused.
+These are small offline smoke baselines. They verify the current fixtures and current contracts. The deterministic stand-ins do not measure live-model planning quality, and one weak-evidence question does not establish that 0.25 is calibrated for a larger corpus. The small denominators are not an embarrassment to hide. They define the job of the suite: fast, reproducible checks for named failure modes.
 
-## State what the number does not prove
+## The citation was real
 
-The citation guard provides the clearest example of a metric boundary.
+The third lesson came from the citation-grounding score.
 
-When `search_docs` returns passages, the runtime registers their citation identifiers. A non-refused final answer must include at least one identifier from that registry, and each declared identifier must appear in the answer text. If the model returns an identifier that was never retrieved, omits citations, or lists a citation without placing it in the answer, the runtime refuses the response.
+When `search_docs` returns passages, the runtime registers their citation identifiers. A non-refused answer must name at least one identifier from that registry, and every declared identifier must appear in the answer text. If the model invents an identifier, omits citations, or lists a citation without using it in the answer, the runtime refuses the response.
 
-This proves citation provenance at the identifier level. The model cannot successfully return a fabricated source ID. The 1.00 citation-grounding rate on three accepted answers confirms that each accepted answer in the smoke suite carries at least one retrieved citation.
+The citation-grounding rate is 1.00 across three accepted answers. Each accepted answer contains a citation that was actually returned by retrieval. This proves citation provenance at the identifier level. The model cannot successfully submit a fabricated source ID.
 
-It does not prove that any sentence is semantically supported by the cited passage. The metric implementation checks whether a claim has a citation attached. The runtime checks whether the identifier came from retrieval and appears in the answer. Neither mechanism compares the meaning of each sentence with the meaning of its cited evidence. A response could cite a real retrieved passage and still overstate it, misread it, or attach it to the wrong claim.
+It does not prove that the answer is supported by the source.
 
-Calling the metric “grounding” without stating that boundary would invite a larger conclusion than the implementation supports. The precise result is narrower: accepted answers carried retrieved citation identifiers, and fabricated identifiers were rejected. Claim-level entailment would require a different evaluation with labeled claims and evidence.
+That gap matters because the word “grounding” sounds broader than the implementation. The metric checks whether a citation is attached. The runtime checks whether the identifier came from retrieval and appears in the answer. Neither one compares each sentence with the cited passage. A model could cite a real passage and still exaggerate it, misread it, or place it after an unrelated claim.
 
-The same discipline applies to refusal. A rate of 1.00 across four cases means the system accepted three answerable fixtures and refused one weak-evidence fixture under the current retrieval setup and threshold. It does not license a claim that the agent reliably knows when it lacks evidence. That would require a broader set of answerable and unanswerable questions, threshold analysis, and live-model behavior.
+Once I wrote the boundary down, the result became easier to report accurately: all three accepted smoke-test answers carried retrieved citation identifiers, and fabricated identifiers were rejected. Claim-level semantic support remains unmeasured. Testing that would require labeled claims and evidence, not another name for the provenance check.
 
-I now treat the boundary of a metric as part of the metric. The value, denominator, fixture construction, deterministic or live execution mode, and explicit non-claim belong together. Without those pieces, a number is easy to repeat and hard to interpret.
+I kept the row in the table. I changed the sentence next to it.
 
-The checked-in suite is intentionally modest. It establishes that temporal leakage is enforced, runtime contracts are exercised reproducibly, and citation provenance is checked on small offline fixtures. It also records what remains unmeasured. That is enough for a regression baseline because the claims match the evidence.
+That is now how I read the rest of the evaluation too. The leakage score tests an enforced temporal invariant on two cases. The trajectory scores test the runtime with scripted actions. The citation score tests source-ID provenance. None of them, alone or together, says that the model is good at research.
+
+The harness passed. That was worth knowing. The model was mostly not the thing being measured.
 
 <!--
 Alternative titles:
-1. Your Agent Eval Is Measuring the Wrong Thing
-2. What an Agent Metric Actually Means
-3. A Passing Eval Is Not a Capability Claim
+1. Nearly Every Score Was 1.00
+2. Two Kinds of Green
+3. What the Eval Actually Measured
 -->
