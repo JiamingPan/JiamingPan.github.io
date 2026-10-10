@@ -530,9 +530,24 @@
 			}
 		}
 
+		.title-line {
+			margin: -8px 0 22px;
+			color: var(--muted);
+			font-size: 16px;
+		}
+
+		.intro-list {
+			max-width: 780px;
+			margin: 0 0 18px;
+		}
+
+		.intro-list li {
+			margin-bottom: 6px;
+		}
+
 		.stats {
 			display: grid;
-			grid-template-columns: repeat(4, minmax(0, 1fr));
+			grid-template-columns: repeat(2, minmax(0, 220px));
 			gap: 18px 28px;
 			margin: 34px 0 0;
 			padding: 22px 0 0;
@@ -591,19 +606,25 @@
 
 	<main id="top" class="page-shell">
 		<section class="intro" id="about">
-			<p class="eyebrow">ML research · LLM inference · Scientific computing</p>
 			<h1>Jiaming Pan</h1>
+			<p class="title-line">Physics PhD candidate, University of Michigan. Machine learning, LLM inference, and cosmology. Ann Arbor, MI.</p>
 			<p class="intro-copy">
-				I build and evaluate machine learning systems end to end: low-bit LLM inference and compression, RL post-training, and generative models for scientific data. As a machine learning research intern at Escha Labs in summer 2026, I developed a mixed precision allocation method that was adopted in the production quantizer behind their 2-bit LLMs.
+				I am a PhD candidate in physics at the University of Michigan, advised by Dragan Huterer and Camille Avestruz, and a member of the DESI collaboration. I expect to finish in May 2027.
 			</p>
 			<p class="intro-copy">
-				I'm a Physics PhD candidate at the University of Michigan, graduating May 2027. My doctoral research in the DESI collaboration covers dark energy and modified gravity: theory, numerical methods, and Bayesian inference pipelines for galaxy clustering, supernova, and CMB data. I'm looking for full-time roles in ML research, research engineering, and quantitative research.
+				My research sits between machine learning and cosmology. On the ML side I work on efficient inference for large language models, low-bit quantization, RL post-training, and diffusion models as surrogates for expensive simulations. In summer 2026 I was a research intern at Escha Labs, where the mixed precision allocation method I developed was adopted in the quantizer behind their 2-bit models. On the cosmology side I use DESI, supernova, and CMB data to test dark energy and modified gravity, and I build the Bayesian inference pipelines those tests run on. Questions I keep coming back to:
+			</p>
+			<ul class="plain-list intro-list">
+				<li>How few bits can a language model run on before it stops being the same model, and which weights decide that?</li>
+				<li>When does a generative model trained on simulations stop copying them and start learning the physics?</li>
+				<li>Is the expansion of the universe telling us something is wrong with general relativity, and how would we know?</li>
+			</ul>
+			<p class="intro-copy">
+				Before graduate school I completed a BS in astronomy and physics at Michigan with highest honors. My PhD work has been supported by the MICDE Fellowship, the Peter Franken Award, and the Leinweber Graduate Summer Fellowship. I am looking for a full-time ML research, research engineering, or quantitative research role starting in 2027.
 			</p>
 			<ul class="stats" aria-label="Highlights">
 				<li><span class="stat-value">7,500+</span><span class="stat-label">citations · h-index 16</span></li>
 				<li><span class="stat-value">23</span><span class="stat-label">papers, six as first author</span></li>
-				<li><span class="stat-value">1.76×</span><span class="stat-label">faster decode on a 27B low-bit LLM</span></li>
-				<li><span class="stat-value">14×</span><span class="stat-label">faster search in a production quantizer</span></li>
 			</ul>
 			<div class="text-links" aria-label="Profile links">
 				<a href="mailto:jiamingp@umich.edu">Email</a>
@@ -616,18 +637,6 @@
 
 		<section class="section" aria-labelledby="research-focus-heading">
 			<div class="research-grid">
-				<div class="quiet-block">
-					<p class="section-label">Focus</p>
-					<h2 id="research-focus-heading">What I work on</h2>
-					<ul class="plain-list">
-						<li>Efficient LLM inference: low-bit kernels, speculative decoding, serving</li>
-						<li>Model compression and mixed precision quantization</li>
-						<li>RL post-training and evaluation that holds up</li>
-						<li>Diffusion models for scientific simulations</li>
-						<li>Bayesian inference and uncertainty quantification</li>
-						<li>Dark energy and modified gravity</li>
-					</ul>
-				</div>
 				<div class="quiet-block">
 					<p class="section-label">Now</p>
 					<h2>Roles</h2>
@@ -715,7 +724,7 @@
 							I built conditional diffusion training and evaluation pipelines in PyTorch and Diffusers for CAMELS cosmological fields, and ran 50+ experiments on a Slurm GPU cluster with 64 to 32,768 training fields to study memorization and generalization. The evaluation suite combines FFT nearest-neighbor search, PCA novelty, patch-copy tests, and a frozen predictor trained on real data.
 						</p>
 						<p>
-							The main finding: samples that pass standard realism checks can still mislead downstream models. At 64 training fields, 95% intervals from a predictor trained on synthetic data covered the truth only 38% of the time. Accepted at the ML4PS workshop, NeurIPS 2026. The experiments ran through an LLM-agent workflow (planner, executor, critic) with an append-only ledger and hooks that gate cluster submissions and destructive actions.
+							The main finding is that the three checks disagree. Small models match the power spectrum while copying training fields, and models that pass a novelty test can still ignore the requested cosmology. At 128 training fields, 95% recovery intervals for &Omega;<sub>m</sub> contained the requested value only 22% of the time; at 16,384 fields, 91%. Accepted at the ML4PS workshop, NeurIPS 2026. The experiments ran through an LLM-agent workflow (planner, executor, critic) with an append-only ledger and hooks that gate cluster submissions and destructive actions.
 						</p>
 						<div class="inline-links">
 							<a href="blog/diffusion-cosmology.html">Blog</a>
@@ -819,8 +828,8 @@
 				</article>
 
 				<article class="blog-entry">
-					<h3><a href="blog/diffusion-cosmology.html">When does a diffusion model stop memorizing cosmological fields?</a></h3>
-					<p>Memorization, physical fidelity, and conditional recovery in CAMELS fields.</p>
+					<h3><a href="blog/diffusion-cosmology.html">Three tests a cosmological diffusion model has to pass</a></h3>
+					<p>Novelty, summary statistics, and conditional recovery disagree in useful ways. Write-up of our ML4PS 2026 paper.</p>
 				</article>
 
 				<article class="blog-entry">

@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<title>When does a diffusion model stop memorizing cosmological fields? — Jiaming Pan</title>
+	<title>Three tests a cosmological diffusion model has to pass — Jiaming Pan</title>
 	<meta name="description" content="A short write-up of my AstroAI 2026 poster on memorization, generalization, and calibration in diffusion models trained on CAMELS HI maps." />
 	<meta name="author" content="Jiaming Pan" />
 	<meta property="og:title" content="When does a diffusion model stop memorizing cosmological fields?" />
@@ -91,124 +91,149 @@
 	<main>
 		<article class="article">
 			<a class="back" href="../index.html#blog">&larr; Back to blog</a>
-			<h1 class="title">When does a diffusion model stop memorizing cosmological fields?</h1>
-			<p class="meta">2026 · AstroAI poster write-up ·
+			<h1 class="title">Three tests a cosmological diffusion model has to pass</h1>
+			<p class="meta">October 2026 · Write-up of our ML4PS 2026 workshop paper (NeurIPS) ·
+				<a href="https://openreview.net/forum?id=u76j3cOnPT" target="_blank" rel="noopener noreferrer">paper</a> ·
 				<a href="https://github.com/JiamingPan/diffusion-models-simulation-data" target="_blank" rel="noopener noreferrer">repo</a>
 			</p>
 
 			<p class="lead">
-				A generative model for scientific simulation has to do more than make plausible
-				pictures. For cosmology, the useful question is whether the model has learned a
-				distribution of fields, or whether it is quietly returning near-copies of the maps
-				it saw during training.
+				Diffusion models are starting to be used as stand-ins for expensive cosmological
+				simulations. The samples look right. The question Nick Kern and I asked in this paper
+				is what "looks right" actually buys you, and the short answer is less than you would hope.
+				A model can match the power spectrum while copying its training set, and it can produce
+				novel fields while ignoring the cosmology you asked for.
 			</p>
 
-			<h2>The problem</h2>
+			<h2>Setup</h2>
 			<p>
-				Diffusion models are attractive as fast priors for cosmological fields: sample a
-				map, condition it on physical parameters, and use it downstream in inference. But
-				that only works if the generated maps are new, statistically faithful, and sensitive
-				to the requested cosmology. Visual realism is not enough.
+				The data are 128&nbsp;&times;&nbsp;128 neutral hydrogen maps from the IllustrisTNG runs in the
+				CAMELS Multifield Dataset. Each map comes with six parameters, two cosmological
+				(&Omega;<sub>m</sub>, &sigma;<sub>8</sub>) and four astrophysical feedback strengths. I train
+				attention U-Nets at three widths (U-Net-64, 128, 256) with a fixed budget of 200,000 optimizer
+				updates each, and sweep the training-set size from 2<sup>6</sup> to 2<sup>15</sup> fields. Conditional
+				models get the six parameters through cross-attention. The sweep is counted in 2D fields,
+				not independent simulations, which matters because neighbouring slices of one simulation are
+				far from independent.
 			</p>
 			<p>
-				I studied this on CAMELS IllustrisTNG neutral-hydrogen maps. Each map is a
-				128&nbsp;&times;&nbsp;128 slice of an HI field, and the model is a 2D U-Net diffusion
-				model trained across a sweep of training-set sizes, from
-				<code>N<sub>2D</sub> = 2<sup>6</sup></code> to <code>2<sup>15</sup></code> fields.
-				For the conditional runs, the model receives six CAMELS parameters:
-				&Omega;<sub>m</sub>, &sigma;<sub>8</sub>, A<sub>SN1</sub>, A<sub>AGN1</sub>,
-				A<sub>SN2</sub>, and A<sub>AGN2</sub>.
+				Then I apply three separate tests to the samples. Each one answers a different question, and
+				the paper is mostly about showing that passing one tells you little about the other two.
 			</p>
 
-			<h2>Measuring copying</h2>
+			<h2>Test 1. Is the sample new?</h2>
 			<p>
-				For each generated map <code>x<sub>j</sub></code>, I compare it with every training map
-				<code>y<sub>i</sub></code> and keep the closest match:
-				<code>s<sub>j</sub> = max<sub>i</sub> sim(x<sub>j</sub>, y<sub>i</sub>)</code>. A high value
-				means the generated map is nearly a copy of one training map. I measure this in
-				pixel space and in two feature spaces, PCA and SSCD, so the conclusion is not tied
-				to one image metric.
-			</p>
-			<p>
-				The generalization score is the fraction of generated maps that are not unusually
-				close to the training set. In the poster I use
-				<code>GL = Pr[s<sub>j</sub> &lt; &tau;]</code>, where <code>&tau;</code> is the 95th percentile
-				of train-vs-train nearest-neighbor similarity in PCA space. Roughly:
-				<code>GL &approx; 0</code> means copying, and <code>GL &approx; 1</code> means the samples
-				are no closer to the training set than real training maps are to each other.
+				For each generated map I find its closest training map in PCA feature space and record the
+				cosine similarity. The generalization score <em>G</em> is the fraction of generated maps that are
+				less similar to any training map than real training maps are to each other, using the 95th
+				percentile of nearest-neighbour similarity within the training set as the threshold. So
+				<em>G</em>&nbsp;&asymp;&nbsp;0 means the model is returning near-copies and <em>G</em>&nbsp;&asymp;&nbsp;1 means the
+				samples are no closer to the training set than the training set is to itself.
 			</p>
 
 			<figure>
-				<img src="img/nf_generalize_fig2_poster_pca_generalization_q95_serif_clean.png" alt="Generalization score versus training set size for U-Net 64, 128, and 256 diffusion models. The curves rise from near zero to near one as the training set grows." />
-				<figcaption>Generated maps move from training-set-like to novel over a narrow range of training-set sizes.</figcaption>
+				<img src="img/ml4ps_fig1_transition.png" alt="Generalization score versus training set size for U-Net-64, U-Net-128, and U-Net-256. All three curves rise from zero to one, with wider networks transitioning at larger training sets." />
+				<figcaption>Figure 1 from the paper. The transition from copying to novelty is sharp, and it moves to larger training sets for wider networks at a fixed training budget.</figcaption>
 			</figure>
 
-			<h2>The transition</h2>
 			<p>
-				The main result is a sharp memorization-to-generalization transition. With little
-				data, generated fields closely match individual training slices. With more data,
-				the same model family produces fields that are much less training-set-like while
-				retaining the visual and statistical structure of real HI maps.
+				The transition is sharp. For U-Net-128, <em>G</em> goes from 0.34 at 512 fields to 1 at 1024.
+				U-Net-256 goes from 0.17 to 0.84 over the same doubling. The wider the network, the more
+				data it needs before it stops copying, at least at this training budget. I would not read the
+				exact crossover as a constant of nature; it depends on the architecture, the feature space,
+				and how long you train. The practical point is that a nearest-neighbour check is cheap and
+				tells you which regime you are in before you trust anything downstream.
 			</p>
 			<p>
-				I would not read the exact threshold as a universal constant. It depends on the
-				architecture, feature metric, training budget, and dataset. The useful point is more
-				practical: nearest-neighbor checks can tell whether a generative emulator is in the
-				copying regime before it is used for inference.
+				One caveat the paper is explicit about. <em>G</em> is a novelty score, not a quality score.
+				Pure noise would also get <em>G</em>&nbsp;=&nbsp;1.
 			</p>
 
-			<h2>Conditioning is a separate test</h2>
+			<h2>Test 2. Does the sample have the right statistics?</h2>
 			<p>
-				Novel samples are still not enough. If I ask the conditional model for a different
-				cosmology, the generated fields should move with that request. To test this, I pass
-				generated maps through a frozen VGG16-feature encoder with an MLP regression head
-				and recover <code>&theta;<sub>rec</sub></code> from each generated field. On real held-out
-				HI maps, this encoder reaches <code>R<sup>2</sup> = 0.91</code> for
-				&Omega;<sub>m</sub>, so I focus the cleanest calibration plot on that parameter.
-			</p>
-			<p>
-				The high-data regime tracks the requested matter density much better than the
-				memorization regime. The important detail is the error bars: small seed-to-seed
-				scatter is not automatically good. In the memorization regime, the bars can look
-				tight while the median is centered on the wrong value. Past the transition, the
-				scatter is a more honest reflection of uncertainty around the requested cosmology.
+				This is the test most people run first. I compare one-point distributions and power spectra
+				between generated and real fields, and also compute a Fréchet distance in SSCD feature space
+				(a self-supervised descriptor built for image copy detection). I normalize that distance by the
+				distance between two disjoint sets of held-out real fields at the same sample size, so a value
+				of one would mean "as far from real as real is from real".
 			</p>
 
 			<figure>
-				<img src="img/bias_probe_omega_m_best_vgg_poster.png" alt="Recovered versus requested Omega_m for memorization and generalization regimes. The high-data generalization regime tracks the ideal recovery line more closely." />
-				<figcaption>Recovering &Omega;<sub>m</sub> from generated maps with a frozen VGG16 encoder. The slope is probe-calibrated; the main message is the bias and uncertainty behavior.</figcaption>
+				<img src="img/ml4ps_fig2_distribution.png" alt="Five columns for training set sizes 64, 256, 1024, 4096, and 32768. Top row generated fields, middle row closest training field with cosine similarity, bottom row generated mean power spectrum against the real median with 68 and 95 percent bands." />
+				<figcaption>Figure 2 from the paper, unconditional U-Net-128. Top, a generated field. Middle, its closest training field in SSCD space. Bottom, the generated mean power spectrum against the real median and the 68% and 95% ranges of real fields.</figcaption>
 			</figure>
 
-			<h2>Physical fidelity</h2>
 			<p>
-				I also check ordinary summary statistics. The one-point PDF asks whether the pixel
-				values have the right distribution; the power spectrum <code>P(k)</code> asks whether
-				the field has the right structure across spatial scales. In a full-data U-Net-128
-				run, low-<code>k</code> large-scale power matches first, while high-<code>k</code>
-				small-scale power catches up later in training.
+				Here is the result I find most useful. At 64 and 256 training fields the power spectra agree
+				well with the real fields, and the generated maps are near-copies of training maps, with
+				cosine similarities of 1.000 and 0.997 to their closest training example. Matching the power
+				spectrum is easy if you are copying.
+			</p>
+			<p>
+				At 1024 fields, right around the novelty transition, agreement gets worse, not better. The
+				power spectrum picks up a scale-dependent offset and the normalized SSCD distance jumps to
+				17.3, the largest of the five models shown. Past the transition, at 4096 and 32,768 fields, the power
+				spectrum recovers and the distance falls to about 5.5. So the model goes through a stretch
+				where it has stopped copying but has not yet learned the distribution. If you only checked
+				the power spectrum at the small end of the sweep, you would have been happiest with the
+				models that were copying.
+			</p>
+
+			<h2>Test 3. Does the sample respond to the cosmology you asked for?</h2>
+			<p>
+				This is the test that matters if you want to use the generator for inference. I train a
+				frozen VGG16 encoder with a small MLP head to predict the six parameters from real fields.
+				On held-out real maps it reaches R<sup>2</sup>&nbsp;=&nbsp;0.91 for &Omega;<sub>m</sub>, which is the
+				parameter I report. Then I take 32 held-out cosmologies, generate 64 conditional fields for
+				each, run them through the probe, and ask how often the requested &Omega;<sub>m</sub> falls inside
+				the central 68% and 95% intervals of the recovered values.
 			</p>
 
 			<figure>
-				<img src="img/learning_process_pk_parallel_poster.png" alt="Generated and real power spectra at early, middle, and final training checkpoints. The generated power spectrum approaches the real reference through training." />
-				<figcaption>Generated power spectra approach the real reference through training for the full-data U-Net-128 run.</figcaption>
+				<img src="img/ml4ps_fig3_recovery.png" alt="Left, recovered versus requested Omega_m for conditional models trained on 128, 1024, and 16384 fields; only the largest tracks the diagonal. Right, empirical versus nominal coverage; the small models sit far below the diagonal." />
+				<figcaption>Figure 3 from the paper, conditional U-Net-128. Left, median and 68% interval of recovered &Omega;<sub>m</sub> across 64 generated fields per requested value. Right, empirical coverage against nominal interval level. Below the diagonal means the intervals are too narrow for how often they miss.</figcaption>
 			</figure>
+
+			<p>
+				At 128 training fields the recovered &Omega;<sub>m</sub> barely moves when the requested value
+				changes. The intervals are narrow, which looks reassuring until you count how often they
+				contain the truth. The nominal 68% and 95% intervals cover the requested value for 12.5% and
+				21.9% of the 32 cosmologies. At 1024 fields coverage is 37.5% and 43.8%. At 16,384 fields it
+				reaches 68.8% and 90.6%, close to nominal.
+			</p>
+			<p>
+				The 1024-field number is the one to notice. In the unconditional sweep, U-Net-128 reaches
+				<em>G</em>&nbsp;=&nbsp;1 at exactly this size. The samples are novel by test 1 and still fail test 3 badly.
+				Novelty does not imply that the conditioning is doing anything.
+			</p>
+			<p>
+				Two things to be careful about. These are recovery intervals across generated fields, not
+				Bayesian credible intervals, so "undercoverage" here is a statement about the generator plus
+				the probe, not about posterior calibration. And the probe can be wrong too. A high held-out
+				R<sup>2</sup> does not make it unbiased on generated fields, and separating generator error
+				from probe error needs the same intervals computed on real fields at the same cosmologies,
+				which we have not done yet.
+			</p>
 
 			<h2>What I take from it</h2>
 			<p>
-				The transition from memorization to generalization, known in natural-image settings,
-				also appears in CAMELS HI fields. For scientific simulation, that transition is not
-				just a model-quality detail. It changes how much we should trust the uncertainty
-				bars and whether a conditional generator is actually responding to the physical
-				parameters we ask for.
+				The three tests measure different things and they disagree with each other at interesting
+				places. Power spectra can look fine while the model copies. Novelty can be perfect while the
+				conditioning is ignored. Distributional agreement dips right where novelty appears. None of
+				this shows up if you look at samples by eye.
 			</p>
 			<p>
-				The practical lesson is simple: before using a diffusion model as a cosmological
-				emulator, check novelty, calibration, and physical summary statistics separately.
-				A model can match a power spectrum and still be biased as a conditional generator.
-				The diagnostics here are meant to catch that failure mode early.
+				The honest scope of the paper is one simulation suite, one field type, one probe, and one
+				training run per configuration, with no seed variation. The unconditional and conditional
+				sweeps are also separate experiments, so I am not claiming all three criteria on the same
+				models. What I am claiming is narrower and, I think, more useful. Before a diffusion model
+				goes into a cosmological inference pipeline, run a nearest-neighbour check, a summary
+				statistic check, and a conditional recovery check, and treat them as three tests rather than
+				one.
 			</p>
 			<p>
-				Code and poster materials:
+				The paper is on <a href="https://openreview.net/forum?id=u76j3cOnPT" target="_blank" rel="noopener noreferrer">OpenReview</a>
+				and the code is at
 				<a href="https://github.com/JiamingPan/diffusion-models-simulation-data" target="_blank" rel="noopener noreferrer">github.com/JiamingPan/diffusion-models-simulation-data</a>.
 				Questions or suggestions: <a href="mailto:jiamingp@umich.edu">jiamingp@umich.edu</a>.
 			</p>
