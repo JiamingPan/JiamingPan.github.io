@@ -4,10 +4,10 @@
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<title>Jiaming Pan</title>
-	<meta name="description" content="Jiaming Pan is a Physics PhD candidate at the University of Michigan working on LLM compression, cosmological inference, and scientific computing." />
+	<meta name="description" content="Jiaming Pan is a Physics PhD candidate at the University of Michigan working on efficient LLM inference, model compression, post-training, and generative models for scientific data. Graduating May 2027." />
 	<meta name="author" content="Jiaming Pan" />
 	<meta property="og:title" content="Jiaming Pan" />
-	<meta property="og:description" content="Work on LLM compression, cosmological inference, and scientific computing." />
+	<meta property="og:description" content="Efficient LLM inference, model compression, post-training, and generative models for science." />
 	<meta property="og:type" content="website" />
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -529,6 +529,48 @@
 				gap: 6px;
 			}
 		}
+
+		.stats {
+			display: grid;
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+			gap: 18px 28px;
+			margin: 34px 0 0;
+			padding: 22px 0 0;
+			list-style: none;
+			border-top: 1px solid var(--border);
+		}
+
+		.stats li {
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+		}
+
+		.stat-value {
+			font-family: Georgia, "Times New Roman", serif;
+			font-size: 26px;
+			font-weight: 600;
+			letter-spacing: -0.02em;
+			line-height: 1.1;
+		}
+
+		.stat-label {
+			color: var(--muted);
+			font-size: 13px;
+			line-height: 1.4;
+		}
+
+		@media (max-width: 760px) {
+			.stats {
+				grid-template-columns: 1fr 1fr;
+			}
+		}
+
+		@media (max-width: 430px) {
+			.stats {
+				grid-template-columns: 1fr;
+			}
+		}
 	</style>
 </head>
 <body>
@@ -542,50 +584,64 @@
 				<a href="#work">Work</a>
 				<a href="#publications">Publications</a>
 				<a href="#blog">Blog</a>
+				<a href="#contact">Contact</a>
 			</div>
 		</div>
 	</nav>
 
 	<main id="top" class="page-shell">
 		<section class="intro" id="about">
+			<p class="eyebrow">ML research · LLM inference · Scientific computing</p>
 			<h1>Jiaming Pan</h1>
 			<p class="intro-copy">
-				I'm a Physics PhD candidate at the University of Michigan and currently a machine learning research intern at Escha Labs, where I work on LLM compression and inference efficiency. My recent work includes low-bit quantization, post-training, serving, and evaluation.
+				I build and evaluate machine learning systems end to end: low-bit LLM inference and compression, RL post-training, and generative models for scientific data. As a machine learning research intern at Escha Labs in summer 2026, I developed a mixed precision allocation method that was adopted in the production quantizer behind their 2-bit LLMs.
 			</p>
 			<p class="intro-copy">
-				My doctoral research is in dark energy and modified gravity. I develop theory, numerical methods, Bayesian inference pipelines, and robustness tests for cosmological data, including DESI analyses.
+				I'm a Physics PhD candidate at the University of Michigan, graduating May 2027. My doctoral research in the DESI collaboration covers dark energy and modified gravity: theory, numerical methods, and Bayesian inference pipelines for galaxy clustering, supernova, and CMB data. I'm looking for full-time roles in ML research, research engineering, and quantitative research.
 			</p>
+			<ul class="stats" aria-label="Highlights">
+				<li><span class="stat-value">7,500+</span><span class="stat-label">citations · h-index 16</span></li>
+				<li><span class="stat-value">23</span><span class="stat-label">papers, six as first author</span></li>
+				<li><span class="stat-value">1.76×</span><span class="stat-label">faster decode on a 27B low-bit LLM</span></li>
+				<li><span class="stat-value">14×</span><span class="stat-label">faster search in a production quantizer</span></li>
+			</ul>
 			<div class="text-links" aria-label="Profile links">
 				<a href="mailto:jiamingp@umich.edu">Email</a>
 				<a href="https://github.com/jiamingpan" target="_blank" rel="noopener noreferrer">GitHub</a>
 				<a href="https://www.linkedin.com/in/jiaming-pan-99b179162" target="_blank" rel="noopener noreferrer">LinkedIn</a>
 				<a href="https://scholar.google.com/citations?user=6mrY9HIAAAAJ&amp;hl=en" target="_blank" rel="noopener noreferrer">Google Scholar</a>
+				<a href="https://inspirehep.net/authors/2605724" target="_blank" rel="noopener noreferrer">INSPIRE</a>
 			</div>
 		</section>
 
 		<section class="section" aria-labelledby="research-focus-heading">
 			<div class="research-grid">
 				<div class="quiet-block">
-					<p class="section-label">Research interests</p>
-					<h2 id="research-focus-heading">Current research</h2>
+					<p class="section-label">Focus</p>
+					<h2 id="research-focus-heading">What I work on</h2>
 					<ul class="plain-list">
-						<li>Efficient LLM inference and low-bit quantization</li>
-						<li>Post-training, serving, and reliable evaluation</li>
-						<li>Scientific generative models</li>
+						<li>Efficient LLM inference: low-bit kernels, speculative decoding, serving</li>
+						<li>Model compression and mixed precision quantization</li>
+						<li>RL post-training and evaluation that holds up</li>
+						<li>Diffusion models for scientific simulations</li>
 						<li>Bayesian inference and uncertainty quantification</li>
 						<li>Dark energy and modified gravity</li>
 					</ul>
 				</div>
 				<div class="quiet-block">
-					<p class="section-label">Current</p>
+					<p class="section-label">Now</p>
 					<h2>Roles</h2>
 					<div class="role-item">
-						<p class="role-title">Machine Learning Research Intern · Escha Labs</p>
-						<p class="role-detail">LLM compression, QTIP, mixed precision, and GPU solver optimization.</p>
+						<p class="role-title">Physics PhD Candidate · University of Michigan</p>
+						<p class="role-detail">Graduating May 2027. DESI collaboration member; modified gravity constraints and inference pipelines.</p>
 					</div>
 					<div class="role-item">
-						<p class="role-title">Physics PhD Candidate · University of Michigan</p>
-						<p class="role-detail">Cosmological inference and DESI modified-gravity analysis.</p>
+						<p class="role-title">Low-bit LLM inference research · since August 2026</p>
+						<p class="role-detail">Kernel and full-model benchmarks of 2/3-bit LLMs in SGLang on NVIDIA A40, with Escha Labs collaborators.</p>
+					</div>
+					<div class="role-item">
+						<p class="role-title">Machine Learning Research Intern · Escha Labs</p>
+						<p class="role-detail">May to July 2026. Mixed precision allocation, weight reconstruction solvers, QTIP, serving benchmarks.</p>
 					</div>
 				</div>
 			</div>
@@ -596,22 +652,40 @@
 				<p class="section-label">Selected work</p>
 				<div>
 					<h2>Machine learning and scientific computing</h2>
-					<p>Recent work across efficient model inference, post-training, and generative models for scientific data.</p>
+					<p>Work on efficient inference, model compression, post-training, generative models for scientific data, and cosmological inference. Numbers are from my own measurements and are documented in the linked write-ups.</p>
 				</div>
 			</div>
 
 			<div class="work-list">
 				<article class="work-row">
-					<p class="work-meta">LLM systems<span>Escha Labs · 2026</span></p>
+					<p class="work-meta">LLM inference<span>Independent research · 2026</span></p>
 					<div class="work-copy">
-						<h3>Low-Bit Quantization and Task-Aware Model Compression</h3>
+						<h3>Low-Bit LLM Inference on NVIDIA A40</h3>
 						<p>
-							I reimplemented the QTIP quantization pipeline for Qwen3-8B end to end and reduced full-model quantization time from about 8 hours to 2.5 hours. I benchmarked exact-search, iterative local-search, and GPU candidate solvers for the binary least-squares reconstruction step. That analysis informed the solver choice for a downstream team kernel, which achieved a 14× speedup over the previous baseline.
+							I benchmark a mixed 2/3-bit 27B LLM in SGLang at the operator and full-model level. Comparing the existing kernel routes, I found the decode path that runs 1.76× faster at batch 1 (45.3 to 25.7 ms per step) and profiled its CUDA graphs with Nsight Systems. For large prefill batches, expanding low-bit weights to FP16 and using a standard matrix multiply is 13 to 18% faster than fused low-bit kernels, with all overheads counted.
 						</p>
 						<p>
-							I am also developing task-aware mixed-precision methods that use hidden-state and output-distribution diagnostics to identify the small set of weights that warrant additional bits.
+							I prototyped concurrency-aware speculative decoding that drafts fewer tokens as load rises. At four concurrent requests on 32 fixed prompts, throughput rose 42% (121 to 173 tokens/s); output agreement is still being validated. I also wrote a bit-exact CPU reference decoder for the 2/3-bit weight format, checked against 3.1 million published values.
 						</p>
-						<p class="methods">PyTorch · CUDA · QTIP · low-bit evaluation</p>
+						<p class="methods">PyTorch · SGLang · CUDA graphs · Nsight Systems · speculative decoding</p>
+					</div>
+				</article>
+
+				<article class="work-row">
+					<p class="work-meta">Model compression<span>Escha Labs · 2026</span></p>
+					<div class="work-copy">
+						<h3>Mixed Precision Quantization for 2-Bit LLMs</h3>
+						<p>
+							I developed a KL divergence guided mixed precision allocation at 2.42 bits per weight. On the production model it improved benchmark scores by 2.4% on commonsense and 2.1% on math and code over the previous allocation, and it beat Hessian guided allocation on 5 of 6 held-out Qwen3-8B tasks at the same bit width.
+						</p>
+						<p>
+							I benchmarked weight reconstruction solvers for the quantizer and identified the method adopted in production, accelerating the search by 14×. I reimplemented QTIP 2-bit quantization from scratch in PyTorch (Qwen3-8B on one A40 in 2.5 hours), caught a bug that made the 35B Escha-W2 model return empty answers before its public release, and mapped where 2-bit deployment pays off: it halves memory and runs 22% faster for a single user, but is 2× slower at 16 concurrent requests.
+						</p>
+						<div class="inline-links">
+							<a href="blog/kl-mixed-precision.html">Blog</a>
+							<a href="https://huggingface.co/EschaLabs" target="_blank" rel="noopener noreferrer">Escha-W2 models</a>
+						</div>
+						<p class="methods">PyTorch · QTIP · mixed precision · low-bit evaluation · serving benchmarks</p>
 					</div>
 				</article>
 
@@ -620,28 +694,52 @@
 					<div class="work-copy">
 						<h3>RL Post-Training, Quantization, and vLLM Serving</h3>
 						<p>
-							I built a reproducible single-GPU study of whether GRPO post-training gains survive 4-bit AWQ quantization on Qwen2.5-1.5B. The project covers reward and advantage diagnostics, pre- and post-quantization evaluation, and vLLM benchmarks for latency and throughput.
+							A single-GPU pipeline that takes Qwen2.5-1.5B from GRPO fine-tuning on automatically checked math answers (GSM8K) through 4-bit AWQ quantization, evaluation, and vLLM serving. RL post-training halved the accuracy lost to 4-bit quantization, from 10 points to 5 on 100 held-out questions (68% to 58% before post-training, 72% to 67% after).
+						</p>
+						<p>
+							In a pilot, I scaled the training code to full-parameter training of Qwen3-8B sharded across two A40 GPUs with FSDP2 at 38.5 GiB peak memory per GPU and measured training throughput.
 						</p>
 						<div class="inline-links">
 							<a href="blog/posttrain-quant-serve.html">Blog</a>
 							<a href="https://github.com/JiamingPan/posttrain-quant-serve" target="_blank" rel="noopener noreferrer">Code</a>
 						</div>
-						<p class="methods">PyTorch · GRPO · AWQ W4G128 · vLLM</p>
+						<p class="methods">PyTorch · TRL · GRPO · AWQ W4G128 · vLLM · FSDP2</p>
 					</div>
 				</article>
 
 				<article class="work-row">
-					<p class="work-meta">Scientific ML<span>Research project · 2025–2026</span></p>
+					<p class="work-meta">Scientific ML<span>Research project · 2026</span></p>
 					<div class="work-copy">
 						<h3>Diffusion Models for Cosmological Simulation Fields</h3>
 						<p>
-							I built the data and evaluation pipeline for diffusion models trained on CAMELS cosmological fields. The evaluation separates memorization from generalization and tests power-spectrum fidelity, learned-feature agreement, and recovery of the physical parameters used to condition the simulations.
+							I built conditional diffusion training and evaluation pipelines in PyTorch and Diffusers for CAMELS cosmological fields, and ran 50+ experiments on a Slurm GPU cluster with 64 to 32,768 training fields to study memorization and generalization. The evaluation suite combines FFT nearest-neighbor search, PCA novelty, patch-copy tests, and a frozen predictor trained on real data.
+						</p>
+						<p>
+							The main finding: samples that pass standard realism checks can still mislead downstream models. At 64 training fields, 95% intervals from a predictor trained on synthetic data covered the truth only 38% of the time. Accepted at the ML4PS workshop, NeurIPS 2026. The experiments ran through an LLM-agent workflow (planner, executor, critic) with an append-only ledger and hooks that gate cluster submissions and destructive actions.
 						</p>
 						<div class="inline-links">
 							<a href="blog/diffusion-cosmology.html">Blog</a>
 							<a href="https://github.com/JiamingPan/diffusion-models-simulation-data" target="_blank" rel="noopener noreferrer">Code</a>
 						</div>
-						<p class="methods">PyTorch · diffusion models · CAMELS · scientific validation</p>
+						<p class="methods">PyTorch · Diffusers · Slurm · agentic experiment workflow</p>
+					</div>
+				</article>
+
+				<article class="work-row">
+					<p class="work-meta">Cosmology<span>DESI · 2022–present</span></p>
+					<div class="work-copy">
+						<h3>Model-Agnostic Tests of Gravity with DESI</h3>
+						<p>
+							Most analyses constrain modified gravity with a one-parameter model. I showed that this hides a real signal: replacing it with a flexible, data-driven reconstruction gave the first model-agnostic 3σ evidence for modified gravity in DESI, supernova, and CMB data (Physical Review D Letter, 79 citations). I am second author on DESI's official 2024 modified gravity analysis.
+						</p>
+						<p>
+							Behind these results are Bayesian inference pipelines in Python and JAX that fit theory models to galaxy clustering, supernova, and CMB data at once, plus automated model-comparison sweeps on Slurm with convergence checks and result aggregation. I also derived theory-consistent initial conditions for early modified gravity and contributed the implementation to the public EFTCAMB code.
+						</p>
+						<div class="inline-links">
+							<a href="https://arxiv.org/abs/2503.19898" target="_blank" rel="noopener noreferrer">PRD Letter</a>
+							<a href="https://github.com/EFTCAMB/EFTCAMB" target="_blank" rel="noopener noreferrer">EFTCAMB</a>
+						</div>
+						<p class="methods">Python · JAX · MCMC · Fisher analysis · Fortran · Slurm</p>
 					</div>
 				</article>
 			</div>
@@ -652,13 +750,25 @@
 				<div class="column-heading">
 					<p class="section-label">Research record</p>
 					<h2>Selected publications</h2>
-					<p>Four first-author papers in small teams. 21 papers and 6,000+ citations overall.</p>
+					<p>23 papers, 7,500+ citations, h-index 16 (INSPIRE, October 2026). Six first-author papers, including a new ML4PS workshop paper; the rest with the DESI and DES collaborations.</p>
 				</div>
 
 				<article class="publication">
-					<h3><a href="https://arxiv.org/abs/2503.19898" target="_blank" rel="noopener noreferrer">Non-minimally Coupled Gravity Constraints from DESI DR2 Data</a></h3>
+					<h3><a href="https://openreview.net/forum?id=u76j3cOnPT" target="_blank" rel="noopener noreferrer">Probing Cosmology with Diffusion Models: Memorization, Generalization, and Parameter Recovery</a></h3>
+					<p class="authors"><strong>Jiaming Pan</strong> and N. Kern</p>
+					<p class="venue">Machine Learning and the Physical Sciences workshop, NeurIPS 2026 · accepted October 2026</p>
+				</article>
+
+				<article class="publication">
+					<h3><a href="https://arxiv.org/abs/2503.19898" target="_blank" rel="noopener noreferrer">Nonminimally Coupled Gravity Constraints from DESI DR2 Data</a></h3>
 					<p class="authors"><strong>Jiaming Pan</strong> and G. Ye</p>
-					<p class="venue">Physical Review D 113, L041304 (2026) · arXiv:2503.19898</p>
+					<p class="venue">Physical Review D 113, L041304 (2026), Letter · arXiv:2503.19898 · 79 citations</p>
+				</article>
+
+				<article class="publication">
+					<h3><a href="https://arxiv.org/abs/2510.19931" target="_blank" rel="noopener noreferrer">Determining the Hubble Constant through Cross-Correlation of Galaxies and Gravitational Waves</a></h3>
+					<p class="authors"><strong>Jiaming Pan</strong>, D. Huterer, C. Avestruz, D. H. T. Cheung, E. Trott, N. Dalal, and D. Jeong</p>
+					<p class="venue">Physical Review D 113, 103532 (2026) · arXiv:2510.19931</p>
 				</article>
 
 				<article class="publication">
@@ -668,20 +778,26 @@
 				</article>
 
 				<article class="publication">
+					<h3><a href="https://arxiv.org/abs/2603.01662" target="_blank" rel="noopener noreferrer">ℋ-EFTCAMB: A Cobaya-Integrated, Python-Wrapped Extension of EFTCAMB for Covariant Horndeski Gravity</a></h3>
+					<p class="authors">G. Ye, S. Lin, <strong>Jiaming Pan</strong>, D. de Boe, S. Verhoeve, et al.</p>
+					<p class="venue">Journal of Cosmology and Astroparticle Physics 07, 041 (2026) · arXiv:2603.01662</p>
+				</article>
+
+				<article class="publication">
+					<h3><a href="https://arxiv.org/abs/2411.12026" target="_blank" rel="noopener noreferrer">Modified Gravity Constraints from the Full Shape Modeling of Clustering Measurements from DESI 2024</a></h3>
+					<p class="authors">M. Ishak, <strong>Jiaming Pan</strong>, R. Calderon, K. Lodha, G. Valogiannis, et al. (DESI Collaboration)</p>
+					<p class="venue">Journal of Cosmology and Astroparticle Physics 09, 053 (2025) · arXiv:2411.12026 · 105 citations</p>
+				</article>
+
+				<article class="publication">
 					<h3><a href="https://arxiv.org/abs/2312.05177" target="_blank" rel="noopener noreferrer">Compressed Baryon Acoustic Oscillation Analysis Is Robust to Modified-Gravity Models</a></h3>
 					<p class="authors"><strong>Jiaming Pan</strong>, D. Huterer, F. Andrade-Oliveira, and C. Avestruz</p>
 					<p class="venue">Journal of Cosmology and Astroparticle Physics 06, 051 (2024) · arXiv:2312.05177</p>
 				</article>
 
-				<article class="publication">
-					<h3><a href="https://arxiv.org/abs/2510.19931" target="_blank" rel="noopener noreferrer">Determining the Hubble Constant through Cross-Correlation of Galaxies and Gravitational Waves</a></h3>
-					<p class="authors"><strong>Jiaming Pan</strong>, D. Huterer, C. Avestruz, D. H. T. Cheung, E. Trott, N. Dalal, and D. Jeong</p>
-					<p class="venue">Physical Review D 113, 103532 (2026) · arXiv:2510.19931</p>
-				</article>
-
 				<div class="inline-links">
 					<a href="https://scholar.google.com/citations?user=6mrY9HIAAAAJ&amp;hl=en" target="_blank" rel="noopener noreferrer">Google Scholar</a>
-					<a href="https://inspirehep.net/authors/2605724?ui-citation-summary=true" target="_blank" rel="noopener noreferrer">InspireHEP</a>
+					<a href="https://inspirehep.net/authors/2605724?ui-citation-summary=true" target="_blank" rel="noopener noreferrer">All 23 papers on INSPIRE</a>
 				</div>
 			</section>
 
@@ -721,7 +837,7 @@
 					<h2>Education</h2>
 					<div class="education-item">
 						<p class="education-title">PhD Candidate in Physics · University of Michigan</p>
-						<p class="education-meta">Expected 2027</p>
+						<p class="education-meta">Expected May 2027 · Graduate Certificate in Computational Discovery and Engineering (in progress)</p>
 						<p class="education-awards">MICDE Fellowship · Peter Franken Award · Leinweber Graduate Summer Fellowship</p>
 					</div>
 					<div class="education-item">
@@ -729,12 +845,16 @@
 						<p class="education-meta">2022 · Highest Honors · Minor in Philosophy</p>
 						<p class="education-awards">William L. Williams Thesis Award · Wirt and Mary Cornwell Prize</p>
 					</div>
+					<div class="education-item">
+						<p class="education-title">Skills</p>
+						<p class="education-meta">Python, C/C++, Fortran, Bash · PyTorch, JAX, Hugging Face (Transformers, TRL, Diffusers) · vLLM, SGLang, FSDP2 · Bayesian inference, MCMC, experiment design · GPU profiling, Slurm/HPC, Docker, Git</p>
+					</div>
 				</div>
 
 				<div>
 					<p class="section-label">Contact</p>
 					<h2>Get in touch</h2>
-					<p class="contact-copy">I am interested in full-time roles in machine learning research, research engineering, and quantitative research. Email is the best way to reach me.</p>
+					<p class="contact-copy">I am looking for full-time roles starting in 2027 in machine learning research, research engineering, and quantitative research. Email is the best way to reach me.</p>
 					<a class="contact-email" href="mailto:jiamingp@umich.edu">jiamingp@umich.edu</a>
 					<div class="inline-links">
 						<a href="https://github.com/jiamingpan" target="_blank" rel="noopener noreferrer">GitHub</a>
