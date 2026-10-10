@@ -276,6 +276,7 @@
 			display: grid;
 			grid-template-columns: 150px minmax(0, 1fr);
 			gap: 46px;
+			align-items: start;
 			padding: 34px 0 38px;
 			border-top: 1px solid var(--border);
 		}
@@ -303,6 +304,31 @@
 
 		.work-copy p {
 			margin: 0 0 12px;
+		}
+
+		.work-row.has-figure {
+			grid-template-columns: 150px minmax(0, 1fr) 320px;
+			gap: 46px 40px;
+		}
+
+		.work-figure {
+			margin: 6px 0 0;
+		}
+
+		.work-figure img {
+			display: block;
+			width: 100%;
+			height: auto;
+			border: 1px solid var(--border);
+			border-radius: 4px;
+			background: #fff;
+		}
+
+		.work-figure figcaption {
+			margin-top: 8px;
+			color: var(--faint);
+			font-size: 12px;
+			line-height: 1.5;
 		}
 
 		.work-copy .methods {
@@ -484,8 +510,13 @@
 			.research-grid,
 			.background-grid,
 			.publication-blog-grid,
-			.work-row {
+			.work-row,
+			.work-row.has-figure {
 				grid-template-columns: 1fr;
+			}
+
+			.work-figure {
+				max-width: 420px;
 			}
 
 			.section-heading {
@@ -698,7 +729,7 @@
 					</div>
 				</article>
 
-				<article class="work-row">
+				<article class="work-row has-figure">
 					<p class="work-meta">Post-training<span>Independent study · 2026</span></p>
 					<div class="work-copy">
 						<h3>RL Post-Training, Quantization, and vLLM Serving</h3>
@@ -714,9 +745,13 @@
 						</div>
 						<p class="methods">PyTorch · TRL · GRPO · AWQ W4G128 · vLLM · FSDP2</p>
 					</div>
+					<figure class="work-figure">
+						<img src="blog/img/accuracy_matrix_test100.png" alt="GSM8K accuracy for base and GRPO models at FP16, NF4, and AWQ W4G128. The GRPO gain survives quantization." loading="lazy" />
+						<figcaption>GSM8K accuracy, base vs GRPO, before and after 4-bit quantization (100 held-out questions).</figcaption>
+					</figure>
 				</article>
 
-				<article class="work-row">
+				<article class="work-row has-figure">
 					<p class="work-meta">Scientific ML<span>Research project · 2026</span></p>
 					<div class="work-copy">
 						<h3>Diffusion Models for Cosmological Simulation Fields</h3>
@@ -732,9 +767,13 @@
 						</div>
 						<p class="methods">PyTorch · Diffusers · Slurm · agentic experiment workflow</p>
 					</div>
+					<figure class="work-figure">
+						<img src="blog/img/ml4ps_fig3_recovery.png" alt="Recovered versus requested Omega_m for conditional diffusion models trained on 128, 1024, and 16384 fields, with coverage curves." loading="lazy" />
+						<figcaption>Recovered &Omega;<sub>m</sub> against the requested value. Only the largest training set tracks the diagonal. From the ML4PS paper.</figcaption>
+					</figure>
 				</article>
 
-				<article class="work-row">
+				<article class="work-row has-figure">
 					<p class="work-meta">Cosmology<span>DESI · 2022–present</span></p>
 					<div class="work-copy">
 						<h3>Model-Agnostic Tests of Gravity with DESI</h3>
@@ -750,6 +789,10 @@
 						</div>
 						<p class="methods">Python · JAX · MCMC · Fisher analysis · Fortran · Slurm</p>
 					</div>
+					<figure class="work-figure">
+						<img src="blog/img/nmc_reconstruction.png" alt="Nonparametric reconstruction of the nonminimal coupling function Omega_EFT against redshift, with 68 and 95 percent bands sitting above zero." loading="lazy" />
+						<figcaption>Reconstructed nonminimal coupling &Omega;<sup>EFT</sup>(z) from DESI DR2, DESY5 SN, and CMB. The GR value is the dashed line at zero. From the PRD Letter.</figcaption>
+					</figure>
 				</article>
 			</div>
 		</section>
