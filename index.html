@@ -600,7 +600,6 @@
 		}
 
 		.work-copy p + p {
-			color: var(--muted);
 			font-size: 15px;
 		}
 
@@ -685,10 +684,7 @@
 					<h1>Jiaming Pan</h1>
 					<p class="title-line">Physics PhD candidate, University of Michigan · Ann Arbor, MI</p>
 					<p class="intro-copy">
-						I work on two things. Making large language models cheaper to run (low-bit quantization, inference kernels, RL post-training), and testing dark energy and modified gravity with DESI data. Last summer at Escha Labs the mixed precision method I developed went into the quantizer behind their 2-bit models.
-					</p>
-					<p class="intro-copy">
-						Advised by Dragan Huterer and Camille Avestruz. Finishing in May 2027 and looking for ML research, research engineering, or quant research roles.
+						I make large language models cheaper to run, mostly through low-bit quantization and inference kernels, and I test dark energy and modified gravity with DESI data. Last summer at Escha Labs the mixed precision method I developed went into the quantizer behind their 2-bit models. I finish my physics PhD at Michigan in May 2027 and want to work on inference efficiency, post-training, or quant research full time.
 					</p>
 				</div>
 				<aside class="intro-side">
@@ -699,11 +695,6 @@
 						<li><a href="https://www.linkedin.com/in/jiaming-pan-99b179162" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
 						<li><a href="https://scholar.google.com/citations?user=6mrY9HIAAAAJ&amp;hl=en" target="_blank" rel="noopener noreferrer">Google Scholar</a></li>
 						<li><a href="https://inspirehep.net/authors/2605724" target="_blank" rel="noopener noreferrer">INSPIRE</a></li>
-					</ul>
-					<p class="side-label">Record</p>
-					<ul class="side-list muted">
-						<li>23 papers, 6 first author</li>
-						<li>7,500+ citations, h-index 16</li>
 					</ul>
 				</aside>
 			</div>
@@ -722,8 +713,8 @@
 					<p class="work-meta">LLM inference<span>Independent research · 2026</span></p>
 					<div class="work-copy">
 						<h3>Low-Bit LLM Inference on NVIDIA A40</h3>
-						<p class="lede">Running a 27B model in 2 to 3 bits per weight makes it fit on one cheap GPU. The question is whether it also runs fast. I measured where the time goes and found the fastest route through the existing kernels.</p>
-						<p>Decode at batch 1 runs 1.76× faster on the best kernel path (45.3 to 25.7 ms per step). A concurrency-aware speculative decoding prototype raised throughput 42% at four concurrent requests, with output agreement still being validated. For large prefill batches, plain FP16 matmul beats fused low-bit kernels by 13 to 18%.</p>
+						<p class="lede">I profiled a 27B model quantized to 2 to 3 bits per weight on a single A40 to find out where decode time actually goes.</p>
+						<p>The best kernel path cut batch-1 decode from 45.3 to 25.7 ms per step, a 1.76× speedup, and a concurrency-aware speculative decoding prototype raised throughput 42% at four concurrent requests. For large prefill batches, plain FP16 matmul beat the fused low-bit kernels by 13 to 18%, so I kept FP16 there.</p>
 						<p class="methods">PyTorch · SGLang · CUDA graphs · Nsight Systems · speculative decoding</p>
 					</div>
 				</article>
@@ -732,8 +723,8 @@
 					<p class="work-meta">Model compression<span>Escha Labs · 2026</span></p>
 					<div class="work-copy">
 						<h3>Mixed Precision Quantization for 2-Bit LLMs</h3>
-						<p class="lede">Not every weight in a language model matters equally. I built a method that finds the few weights that deserve extra bits, and it is now used in Escha's production quantizer.</p>
-						<p>At 2.42 bits per weight it improved the production model by 2.4% on commonsense and 2.1% on math and code benchmarks, and beat Hessian guided allocation on 5 of 6 held-out Qwen3-8B tasks. I also identified the weight reconstruction solver adopted in production (14× faster search), reimplemented QTIP from scratch, and caught a bug in the 35B model before its public release.</p>
+						<p class="lede">At Escha Labs I built a method that picks which weights in a language model get extra bits, and it is now part of the production quantizer.</p>
+						<p>At 2.42 bits per weight it improved the production model by 2.4% on commonsense and 2.1% on math and code benchmarks, and beat Hessian guided allocation on 5 of 6 held-out Qwen3-8B tasks. I also chose the weight reconstruction solver that shipped (14× faster search), reimplemented QTIP from scratch, and caught a bug in the 35B model before its public release.</p>
 						<div class="inline-links">
 							<a href="blog/kl-mixed-precision.html">Blog</a>
 							<a href="https://huggingface.co/EschaLabs" target="_blank" rel="noopener noreferrer">Escha-W2 models</a>
@@ -746,8 +737,8 @@
 					<p class="work-meta">Post-training<span>Independent study · 2026</span></p>
 					<div class="work-copy">
 						<h3>RL Post-Training, Quantization, and vLLM Serving</h3>
-						<p class="lede">If you fine-tune a model with RL and then compress it to 4 bits, do the gains survive? For a 1.5B math model, they do, and the compressed model loses half as much accuracy as it did before fine-tuning.</p>
-						<p>Single-GPU pipeline from GRPO on GSM8K through AWQ 4-bit quantization and vLLM serving. Accuracy lost to quantization dropped from 10 points to 5 on 100 held-out questions. A pilot scaled the trainer to full-parameter Qwen3-8B on two A40s with FSDP2.</p>
+						<p class="lede">I checked whether accuracy gains from RL fine-tuning survive 4-bit compression, using a 1.5B math model on one GPU.</p>
+						<p>They do, and the fine-tuned model lost half as much to quantization as the base model, 5 points instead of 10 on 100 held-out GSM8K questions. The pipeline runs GRPO through AWQ W4G128 and vLLM, and a pilot scaled the trainer to full-parameter Qwen3-8B on two A40s with FSDP2.</p>
 						<div class="inline-links">
 							<a href="blog/posttrain-quant-serve.html">Blog</a>
 							<a href="https://github.com/JiamingPan/posttrain-quant-serve" target="_blank" rel="noopener noreferrer">Code</a>
@@ -764,8 +755,8 @@
 					<p class="work-meta">Scientific ML<span>Research project · 2026</span></p>
 					<div class="work-copy">
 						<h3>Diffusion Models for Cosmological Simulation Fields</h3>
-						<p class="lede">Cosmologists want generative models as cheap stand-ins for expensive simulations. I showed that a model whose samples look right can still be copying its training set or ignoring the physics you asked for, and built three tests that catch each failure separately.</p>
-						<p>Conditional diffusion models on CAMELS fields, 50+ training runs from 64 to 32,768 fields. At 128 training fields, 95% recovery intervals for &Omega;<sub>m</sub> contained the requested value only 22% of the time; at 16,384 fields, 91%. Accepted at ML4PS, NeurIPS 2026.</p>
+						<p class="lede">I trained conditional diffusion models on CAMELS simulation fields and showed that samples which look right can still be copies of the training set, or ignore the physics parameter they were asked for.</p>
+						<p>Across 50+ runs from 64 to 32,768 training fields, 95% recovery intervals for &Omega;<sub>m</sub> contained the requested value only 22% of the time at 128 fields and 91% at 16,384. Accepted at ML4PS, NeurIPS 2026.</p>
 						<div class="inline-links">
 							<a href="blog/diffusion-cosmology.html">Blog</a>
 							<a href="https://github.com/JiamingPan/diffusion-models-simulation-data" target="_blank" rel="noopener noreferrer">Code</a>
@@ -782,8 +773,8 @@
 					<p class="work-meta">Cosmology<span>DESI · 2022–present</span></p>
 					<div class="work-copy">
 						<h3>Model-Agnostic Tests of Gravity with DESI</h3>
-						<p class="lede">Is gravity on cosmic scales exactly what Einstein predicted? Most analyses answer with a one-parameter model. I showed that model hides a real signal in the latest data.</p>
-						<p>A flexible, data-driven reconstruction gives the first model-agnostic 3&sigma; evidence for modified gravity from DESI, supernova, and CMB data together (PRD Letter, 79 citations). Second author on DESI's official 2024 modified gravity analysis. The inference pipelines behind this run in Python and JAX on Slurm.</p>
+						<p class="lede">Most tests of gravity on cosmic scales fit a one-parameter model, and I showed that model hides a real signal in current data.</p>
+						<p>A flexible reconstruction gives the first model-agnostic 3&sigma; evidence for modified gravity from DESI, supernova, and CMB data combined (PRD Letter, 79 citations). I am second author on DESI's official 2024 modified gravity analysis.</p>
 						<div class="inline-links">
 							<a href="https://arxiv.org/abs/2503.19898" target="_blank" rel="noopener noreferrer">PRD Letter</a>
 							<a href="https://github.com/EFTCAMB/EFTCAMB" target="_blank" rel="noopener noreferrer">EFTCAMB</a>
@@ -803,7 +794,7 @@
 				<div class="column-heading">
 					<p class="section-label">Research record</p>
 					<h2>Selected publications</h2>
-					<p>Four first-author papers. The full list of 23 is on INSPIRE.</p>
+					<p>Four first-author papers. 23 in total with 7,500+ citations, mostly through DESI; the full list is on INSPIRE.</p>
 				</div>
 
 				<article class="publication">
@@ -872,7 +863,7 @@
 					<h2>Education</h2>
 					<div class="education-item">
 						<p class="education-title">PhD Candidate in Physics · University of Michigan</p>
-						<p class="education-meta">Expected May 2027 · Graduate Certificate in Computational Discovery and Engineering (in progress)</p>
+						<p class="education-meta">Expected May 2027 · Advisors Dragan Huterer and Camille Avestruz · Graduate Certificate in Computational Discovery and Engineering (in progress)</p>
 						<p class="education-awards">MICDE Fellowship · Peter Franken Award · Leinweber Graduate Summer Fellowship</p>
 					</div>
 					<div class="education-item">
