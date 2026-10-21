@@ -684,7 +684,7 @@
 					<h1>Jiaming Pan</h1>
 					<p class="title-line">Physics PhD candidate, University of Michigan · Ann Arbor, MI</p>
 					<p class="intro-copy">
-						I make large language models cheaper to run, mostly through low-bit quantization and inference kernels, and I test dark energy and modified gravity with data from DESI, the Dark Energy Spectroscopic Instrument, a survey that is mapping tens of millions of galaxies to measure how the universe expands. Last summer at Escha Labs the mixed precision method I developed went into the quantizer behind their 2-bit models. I finish my physics PhD at Michigan in May 2027 and want to work on inference efficiency, post-training, or quant research full time.
+						I make large language models cheaper to run, through low bit quantization, GPU profiling, and inference kernels. Last summer at Escha Labs I developed the mixed precision method that the team built into the quantization pipeline behind its 2 bit models. In my PhD I build Bayesian inference pipelines for DESI, the Dark Energy Spectroscopic Instrument, and study when diffusion models memorize their training data. I finish my physics PhD at Michigan in May 2027 and want to work on inference efficiency, post training, or quant research full time.
 					</p>
 				</div>
 				<aside class="intro-side">
@@ -710,45 +710,27 @@
 
 			<div class="work-list">
 				<article class="work-row">
-					<p class="work-meta">LLM inference<span>Independent research · 2026</span></p>
+					<p class="work-meta">Model compression<span>Escha Labs · Summer 2026</span></p>
 					<div class="work-copy">
-						<h3>Low-Bit LLM Inference on NVIDIA A40</h3>
-						<p class="lede">I profiled a 27B model quantized to 2 to 3 bits per weight on a single A40 to find out where decode time actually goes.</p>
-						<p>The best kernel path cut batch-1 decode from 45.3 to 25.7 ms per step, a 1.76× speedup, and a concurrency-aware speculative decoding prototype raised throughput 42% at four concurrent requests. For large prefill batches, plain FP16 matmul beat the fused low-bit kernels by 13 to 18%, so I kept FP16 there.</p>
-						<p class="methods">PyTorch · SGLang · CUDA graphs · Nsight Systems · speculative decoding</p>
+						<h3>Mixed Precision Quantization for 2 Bit LLMs</h3>
+						<p class="lede">At Escha Labs I built a method that decides which weights in a language model get extra bits, and the team built it into the quantization pipeline behind its public 2 bit models.</p>
+						<p>The method scores each layer by how much quantizing it changes the model's output distribution (KL divergence) instead of by weight curvature. At 2.42 bits per weight it improved the team's 2 bit model by 2.4% on commonsense and 2.1% on math and code benchmarks, and beat Hessian guided allocation on 5 of 6 held out Qwen3 8B tasks at the same bit budget. My solver benchmarks led the team to add a code search method 14× faster than its previous baseline. I also reimplemented QTIP from scratch in PyTorch and caught a bug that made the 35B model return empty answers before its public release.</p>
+						<div class="inline-links">
+							<a href="blog/kl-mixed-precision.html">Blog</a>
+							<a href="https://huggingface.co/EschaLabs" target="_blank" rel="noopener noreferrer">Escha W2 models</a>
+						</div>
+						<p class="methods">PyTorch · QTIP · mixed precision · low bit evaluation · serving benchmarks</p>
 					</div>
 				</article>
 
 				<article class="work-row">
-					<p class="work-meta">Model compression<span>Escha Labs · 2026</span></p>
+					<p class="work-meta">LLM inference<span>Independent research · 2026</span></p>
 					<div class="work-copy">
-						<h3>Mixed Precision Quantization for 2-Bit LLMs</h3>
-						<p class="lede">At Escha Labs I built a method that picks which weights in a language model get extra bits, and it is now part of the production quantizer.</p>
-						<p>At 2.42 bits per weight it improved the production model by 2.4% on commonsense and 2.1% on math and code benchmarks, and beat Hessian guided allocation on 5 of 6 held-out Qwen3-8B tasks. I also chose the weight reconstruction solver that shipped (14× faster search), reimplemented QTIP from scratch, and caught a bug in the 35B model before its public release.</p>
-						<div class="inline-links">
-							<a href="blog/kl-mixed-precision.html">Blog</a>
-							<a href="https://huggingface.co/EschaLabs" target="_blank" rel="noopener noreferrer">Escha-W2 models</a>
-						</div>
-						<p class="methods">PyTorch · QTIP · mixed precision · low-bit evaluation · serving benchmarks</p>
+						<h3>Low Bit LLM Inference on NVIDIA A40</h3>
+						<p class="lede">I profiled a 27B model quantized to 2 to 3 bits per weight on a single A40 to find out where decode and prefill time actually go.</p>
+						<p>The best kernel path cut batch 1 decode from 45.3 to 25.7 ms per step, a 1.76× speedup. For speculative decoding I found that the low bit GEMV kernel only stays cheap up to 16 rows, so I capped total draft rows with concurrency, which raised throughput 42% at four concurrent requests. For large prefill batches, decoding the weights once and running plain FP16 matmul beat the fused low bit kernels by 13 to 18%, and I used Nsight Compute instruction counts to explain where the fused path loses time.</p>
+						<p class="methods">PyTorch · SGLang · CUDA graphs · Nsight Systems · Nsight Compute · speculative decoding</p>
 					</div>
-				</article>
-
-				<article class="work-row has-figure">
-					<p class="work-meta">Post-training<span>Independent study · 2026</span></p>
-					<div class="work-copy">
-						<h3>RL Post-Training, Quantization, and vLLM Serving</h3>
-						<p class="lede">I checked whether accuracy gains from RL fine-tuning survive 4-bit compression, using a 1.5B math model on one GPU.</p>
-						<p>They do, and the fine-tuned model lost half as much to quantization as the base model, 5 points instead of 10 on 100 held-out GSM8K questions. The pipeline runs GRPO through AWQ W4G128 and vLLM, and a pilot scaled the trainer to full-parameter Qwen3-8B on two A40s with FSDP2.</p>
-						<div class="inline-links">
-							<a href="blog/posttrain-quant-serve.html">Blog</a>
-							<a href="https://github.com/JiamingPan/posttrain-quant-serve" target="_blank" rel="noopener noreferrer">Code</a>
-						</div>
-						<p class="methods">PyTorch · TRL · GRPO · AWQ W4G128 · vLLM · FSDP2</p>
-					</div>
-					<figure class="work-figure">
-						<img src="blog/img/accuracy_matrix_test100.png" alt="GSM8K accuracy for base and GRPO models at FP16, NF4, and AWQ W4G128. The GRPO gain survives quantization." loading="lazy" />
-						<figcaption>GSM8K accuracy, base vs GRPO, before and after 4-bit quantization (100 held-out questions).</figcaption>
-					</figure>
 				</article>
 
 				<article class="work-row has-figure">
@@ -756,7 +738,7 @@
 					<div class="work-copy">
 						<h3>Diffusion Models for Cosmological Simulation Fields</h3>
 						<p class="lede">I trained conditional diffusion models on CAMELS simulation fields and showed that samples which look right can still be copies of the training set, or ignore the physics parameter they were asked for.</p>
-						<p>Across 50+ runs from 64 to 32,768 training fields, 95% recovery intervals for &Omega;<sub>m</sub> contained the requested value only 22% of the time at 128 fields and 91% at 16,384. Accepted at ML4PS, NeurIPS 2026.</p>
+						<p>Across 50+ runs from 64 to 32,768 training fields, 95% recovery intervals for &Omega;<sub>m</sub> contained the requested value only 22% of the time at 128 fields and 91% at 16,384. Accepted at ML4PS 2026.</p>
 						<div class="inline-links">
 							<a href="blog/diffusion-cosmology.html">Blog</a>
 							<a href="https://github.com/JiamingPan/diffusion-models-simulation-data" target="_blank" rel="noopener noreferrer">Code</a>
@@ -786,6 +768,19 @@
 						<figcaption>Reconstructed nonminimal coupling &Omega;<sup>EFT</sup>(z) from DESI DR2, DESY5 SN, and CMB. The GR value is the dashed line at zero. From the PRD Letter.</figcaption>
 					</figure>
 				</article>
+
+				<article class="work-row">
+					<p class="work-meta">Post training<span>Side project · 2026</span></p>
+					<div class="work-copy">
+						<h3>RL Post Training to Quantized Serving Pipeline</h3>
+						<p>A single GPU pipeline that takes a 1.5B math model through GRPO training, AWQ 4 bit quantization, held out evaluation, and vLLM serving, with the trainer also scaled to full parameter Qwen3 8B on two A40s with FSDP2.</p>
+						<div class="inline-links">
+							<a href="blog/posttrain-quant-serve.html">Notes</a>
+							<a href="https://github.com/JiamingPan/posttrain-quant-serve" target="_blank" rel="noopener noreferrer">Code</a>
+						</div>
+						<p class="methods">PyTorch · TRL · GRPO · AWQ · vLLM · FSDP2</p>
+					</div>
+				</article>
 			</div>
 		</section>
 
@@ -794,13 +789,13 @@
 				<div class="column-heading">
 					<p class="section-label">Research record</p>
 					<h2>Selected publications</h2>
-					<p>Four first-author papers. 23 in total with 7,500+ citations, mostly through DESI; the full list is on INSPIRE.</p>
+					<p>Six first author journal papers and 23 papers in total, most of them DESI collaboration papers. The full list is on INSPIRE.</p>
 				</div>
 
 				<article class="publication">
 					<h3><a href="https://openreview.net/forum?id=u76j3cOnPT" target="_blank" rel="noopener noreferrer">Probing Cosmology with Diffusion Models: Memorization, Generalization, and Parameter Recovery</a></h3>
 					<p class="authors"><strong>Jiaming Pan</strong> and N. Kern</p>
-					<p class="venue">ML4PS workshop, NeurIPS 2026</p>
+					<p class="venue">ML4PS 2026 workshop</p>
 				</article>
 
 				<article class="publication">
@@ -819,6 +814,12 @@
 					<h3><a href="https://arxiv.org/abs/2506.17411" target="_blank" rel="noopener noreferrer">Consistent Initial Conditions for Early Modified Gravity in Effective Field Theory</a></h3>
 					<p class="authors"><strong>Jiaming Pan</strong>, M.-X. Lin, G. Ye, M. Raveri, and A. Silvestri</p>
 					<p class="venue">Phys. Rev. D 112, 083551 (2025)</p>
+				</article>
+
+				<article class="publication">
+					<h3><a href="https://arxiv.org/abs/2609.19134" target="_blank" rel="noopener noreferrer">ScienceIDE: Turning World's Scientific Codebase into Agent Learnable Environments</a></h3>
+					<p class="authors">H. Geng et al., including <strong>Jiaming Pan</strong> (built the EFTCAMB environment)</p>
+					<p class="venue">Submitted to ICLR 2027 · arXiv:2609.19134</p>
 				</article>
 
 				<div class="inline-links">
