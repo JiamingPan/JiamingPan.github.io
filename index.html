@@ -474,6 +474,17 @@
 			font-size: 13px;
 		}
 
+		.intro-grid {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) 220px;
+			gap: 56px;
+			align-items: start;
+		}
+
+		.intro-side {
+			padding-top: 30px;
+		}
+
 		@media (max-width: 760px) {
 			.nav-inner,
 			.page-shell,
@@ -514,6 +525,22 @@
 			.work-row,
 			.work-row.has-figure {
 				grid-template-columns: 1fr;
+			}
+
+			.intro-grid {
+				gap: 28px;
+			}
+
+			.intro-side {
+				padding-top: 0;
+			}
+
+			.side-list {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 4px 18px;
+				margin-bottom: 0;
+				line-height: 1.6;
 			}
 
 			.work-figure {
@@ -560,17 +587,6 @@
 				flex-direction: column;
 				gap: 6px;
 			}
-		}
-
-		.intro-grid {
-			display: grid;
-			grid-template-columns: minmax(0, 1fr) 220px;
-			gap: 56px;
-			align-items: start;
-		}
-
-		.intro-side {
-			padding-top: 30px;
 		}
 
 		.side-label {
@@ -684,7 +700,7 @@
 					<h1>Jiaming Pan</h1>
 					<p class="title-line">Physics PhD candidate, University of Michigan · Ann Arbor, MI</p>
 					<p class="intro-copy">
-						I make large language models cheaper to run, through low bit quantization, GPU profiling, and inference kernels. Last summer at Escha Labs I developed the mixed precision method that the team built into the quantization pipeline behind its 2 bit models. In my PhD I build Bayesian inference pipelines for DESI, the Dark Energy Spectroscopic Instrument, and study when diffusion models memorize their training data. I finish my physics PhD at Michigan in May 2027 and want to work on inference efficiency, post training, or quant research full time.
+						I work on making large language models efficient to serve, with a focus on low bit quantization, GPU performance analysis, and inference kernels. During a summer 2026 internship at Escha Labs, I developed the mixed precision method that the team integrated into the quantization pipeline behind its 2 bit models. My doctoral research builds Bayesian inference pipelines for the Dark Energy Spectroscopic Instrument (DESI) and examines when diffusion models memorize their training data. I will complete my PhD in physics at the University of Michigan in May 2027 and am seeking full time positions in inference efficiency, post training, and quantitative research.
 					</p>
 				</div>
 				<aside class="intro-side">
@@ -710,26 +726,25 @@
 
 			<div class="work-list">
 				<article class="work-row">
-					<p class="work-meta">Model compression<span>Escha Labs · Summer 2026</span></p>
+					<p class="work-meta">LLM inference<span>Independent research · 2026</span></p>
 					<div class="work-copy">
-						<h3>Mixed Precision Quantization for 2 Bit LLMs</h3>
-						<p class="lede">At Escha Labs I built a method that decides which weights in a language model get extra bits, and the team built it into the quantization pipeline behind its public 2 bit models.</p>
-						<p>The method scores each layer by how much quantizing it changes the model's output distribution (KL divergence) instead of by weight curvature. At 2.42 bits per weight it improved the team's 2 bit model by 2.4% on commonsense and 2.1% on math and code benchmarks, and beat Hessian guided allocation on 5 of 6 held out Qwen3 8B tasks at the same bit budget. My solver benchmarks led the team to add a code search method 14× faster than its previous baseline. I also reimplemented QTIP from scratch in PyTorch and caught a bug that made the 35B model return empty answers before its public release.</p>
-						<div class="inline-links">
-							<a href="blog/kl-mixed-precision.html">Blog</a>
-							<a href="https://huggingface.co/EschaLabs" target="_blank" rel="noopener noreferrer">Escha W2 models</a>
-						</div>
-						<p class="methods">PyTorch · QTIP · mixed precision · low bit evaluation · serving benchmarks</p>
+						<h3>Speeding Up Low Bit LLM Inference</h3>
+						<p class="lede">I made 2 bit quantized language models faster to serve, processing long prompts about 1.5× faster and generating tokens about 1.7× faster with four users sharing a GPU.</p>
+						<p>For a 35B mixture of experts model, I wrote a Triton kernel that dequantizes each expert's compressed weights once instead of over and over. For speculative decoding, I changed how draft tokens are batched so it stays fast as more users join.</p>
+						<p class="methods">PyTorch · Triton · SGLang · CUDA graphs · Nsight Systems · Nsight Compute · speculative decoding</p>
 					</div>
 				</article>
 
 				<article class="work-row">
-					<p class="work-meta">LLM inference<span>Independent research · 2026</span></p>
+					<p class="work-meta">Model compression<span>Escha Labs · Summer 2026</span></p>
 					<div class="work-copy">
-						<h3>Low Bit LLM Inference on NVIDIA A40</h3>
-						<p class="lede">I profiled a 27B model quantized to 2 to 3 bits per weight on a single A40 to find out where decode and prefill time actually go.</p>
-						<p>The best kernel path cut batch 1 decode from 45.3 to 25.7 ms per step, a 1.76× speedup. For speculative decoding I found that the low bit GEMV kernel only stays cheap up to 16 rows, so I capped total draft rows with concurrency, which raised throughput 42% at four concurrent requests. For large prefill batches, decoding the weights once and running plain FP16 matmul beat the fused low bit kernels by 13 to 18%, and I used Nsight Compute instruction counts to explain where the fused path loses time.</p>
-						<p class="methods">PyTorch · SGLang · CUDA graphs · Nsight Systems · Nsight Compute · speculative decoding</p>
+						<h3>2 Bit LLM Quantization at Escha Labs</h3>
+						<p class="lede">I caught a bug that would have shipped Escha's 2 bit 35B model returning empty answers, and developed the mixed precision method the team integrated into its quantization pipeline.</p>
+						<p>I rebuilt the QTIP quantizer from scratch in PyTorch, which is how I found the bug. The mixed precision method decides which layers get extra bits based on how much each one changes the model's output, and it beat the standard Hessian based approach on 5 of 6 held out tasks at the same memory budget.</p>
+						<div class="inline-links">
+							<a href="https://huggingface.co/EschaLabs" target="_blank" rel="noopener noreferrer">Escha W2 models</a>
+						</div>
+						<p class="methods">PyTorch · QTIP · mixed precision · low bit evaluation · serving benchmarks</p>
 					</div>
 				</article>
 
@@ -737,8 +752,8 @@
 					<p class="work-meta">Scientific ML<span>Research project · 2026</span></p>
 					<div class="work-copy">
 						<h3>Diffusion Models for Cosmological Simulation Fields</h3>
-						<p class="lede">I trained conditional diffusion models on CAMELS simulation fields and showed that samples which look right can still be copies of the training set, or ignore the physics parameter they were asked for.</p>
-						<p>Across 50+ runs from 64 to 32,768 training fields, 95% recovery intervals for &Omega;<sub>m</sub> contained the requested value only 22% of the time at 128 fields and 91% at 16,384. Accepted at ML4PS 2026.</p>
+						<p class="lede">I studied when diffusion models trained on physics simulations memorize their training data and when they generalize, and showed that samples can look right while still being memorized copies or ignoring the physics they were asked for.</p>
+						<p>Across more than 50 training runs, I mapped the transition from memorization to generalization as the training set grows. Models trained on 128 simulations recovered the requested physics parameter only 22% of the time, rising to 91% with 16,384. Accepted at ML4PS 2026.</p>
 						<div class="inline-links">
 							<a href="blog/diffusion-cosmology.html">Blog</a>
 							<a href="https://github.com/JiamingPan/diffusion-models-simulation-data" target="_blank" rel="noopener noreferrer">Code</a>
@@ -755,8 +770,8 @@
 					<p class="work-meta">Cosmology<span>DESI · 2022–present</span></p>
 					<div class="work-copy">
 						<h3>Model-Agnostic Tests of Gravity with DESI</h3>
-						<p class="lede">Most tests of gravity on cosmic scales fit a one-parameter model, and I showed that model hides a real signal in current data.</p>
-						<p>A flexible reconstruction gives the first model-agnostic 3&sigma; evidence for modified gravity from DESI, supernova, and CMB data combined (PRD Letter, 79 citations). I am second author on DESI's official 2024 modified gravity analysis.</p>
+						<p class="lede">I showed that the dynamical dark energy signal in DESI data can be interpreted as modified gravity, with a 3&sigma; preference for nonminimal coupling when DESI, supernova, and CMB data are combined.</p>
+						<p>Standard tests fit a single parameter and miss this signal, while a flexible reconstruction of the coupling picks it up. The result was published as a PRD Letter, and I am second author on DESI's official 2024 modified gravity analysis.</p>
 						<div class="inline-links">
 							<a href="https://arxiv.org/abs/2503.19898" target="_blank" rel="noopener noreferrer">PRD Letter</a>
 							<a href="https://github.com/EFTCAMB/EFTCAMB" target="_blank" rel="noopener noreferrer">EFTCAMB</a>
@@ -773,7 +788,8 @@
 					<p class="work-meta">Post training<span>Side project · 2026</span></p>
 					<div class="work-copy">
 						<h3>RL Post Training to Quantized Serving Pipeline</h3>
-						<p>A single GPU pipeline that takes a 1.5B math model through GRPO training, AWQ 4 bit quantization, held out evaluation, and vLLM serving, with the trainer also scaled to full parameter Qwen3 8B on two A40s with FSDP2.</p>
+						<p class="lede">I found that the accuracy a math model gains from RL post training holds up after 4 bit quantization, so the tuned model can be compressed for serving without losing the improvement.</p>
+						<p>I trained a 1.5B Qwen model with GRPO, quantized it with AWQ, evaluated it on held out problems, and served it with vLLM, all on one GPU. I also scaled the trainer to full parameter Qwen3 8B across two GPUs with FSDP2.</p>
 						<div class="inline-links">
 							<a href="blog/posttrain-quant-serve.html">Notes</a>
 							<a href="https://github.com/JiamingPan/posttrain-quant-serve" target="_blank" rel="noopener noreferrer">Code</a>
@@ -801,7 +817,7 @@
 				<article class="publication">
 					<h3><a href="https://arxiv.org/abs/2503.19898" target="_blank" rel="noopener noreferrer">Nonminimally Coupled Gravity Constraints from DESI DR2 Data</a></h3>
 					<p class="authors"><strong>Jiaming Pan</strong> and G. Ye</p>
-					<p class="venue">Phys. Rev. D Letters 113, L041304 (2026) · 79 citations</p>
+					<p class="venue">Phys. Rev. D Letters 113, L041304 (2026)</p>
 				</article>
 
 				<article class="publication">
