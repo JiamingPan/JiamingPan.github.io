@@ -203,6 +203,7 @@
 			grid-template-columns: 180px minmax(0, 1fr);
 			gap: 40px;
 			margin-bottom: 34px;
+			align-items: baseline;
 		}
 
 		.section-heading h2 {
@@ -274,8 +275,8 @@
 
 		.work-row {
 			display: grid;
-			grid-template-columns: 150px minmax(0, 1fr);
-			gap: 46px;
+			grid-template-columns: 180px minmax(0, 1fr);
+			gap: 40px;
 			align-items: start;
 			padding: 34px 0 38px;
 			border-top: 1px solid var(--border);
@@ -307,12 +308,18 @@
 		}
 
 		.work-row.has-figure {
-			grid-template-columns: 150px minmax(0, 1fr) 320px;
-			gap: 46px 40px;
+			grid-template-columns: 180px minmax(0, 1fr);
+			gap: 24px 40px;
 		}
 
 		.work-figure {
-			margin: 6px 0 0;
+			grid-column: 2;
+			margin: 0;
+			max-width: 100%;
+		}
+
+		.work-figure.narrow {
+			max-width: 560px;
 		}
 
 		.work-figure img {
@@ -325,9 +332,9 @@
 		}
 
 		.work-figure figcaption {
-			margin-top: 8px;
-			color: var(--faint);
-			font-size: 12px;
+			margin-top: 10px;
+			color: var(--muted);
+			font-size: 14px;
 			line-height: 1.5;
 		}
 
@@ -543,8 +550,10 @@
 				line-height: 1.6;
 			}
 
-			.work-figure {
-				max-width: 420px;
+			.work-figure,
+			.work-figure.narrow {
+				grid-column: 1;
+				max-width: 100%;
 			}
 
 			.section-heading {
@@ -611,12 +620,12 @@
 		}
 
 		.work-copy .lede {
-			font-size: 17px;
+			font-size: 16px;
 			line-height: 1.6;
 		}
 
 		.work-copy p + p {
-			font-size: 15px;
+			font-size: 16px;
 		}
 
 		.title-line {
@@ -778,7 +787,7 @@
 						</div>
 						<p class="methods">Python · JAX · MCMC · Fisher analysis · Fortran · Slurm</p>
 					</div>
-					<figure class="work-figure">
+					<figure class="work-figure narrow">
 						<img src="blog/img/nmc_reconstruction.png" alt="Nonparametric reconstruction of the nonminimal coupling function Omega_EFT against redshift, with 68 and 95 percent bands sitting above zero." loading="lazy" />
 						<figcaption>Reconstructed nonminimal coupling &Omega;<sup>EFT</sup>(z) from DESI DR2, DESY5 SN, and CMB. The GR value is the dashed line at zero. From the PRD Letter.</figcaption>
 					</figure>
